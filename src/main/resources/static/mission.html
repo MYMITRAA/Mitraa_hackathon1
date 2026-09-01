@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="description" content="Detailed MiTRAA Hackathons 2026 arena mission briefing.">
+    <title>Mission Briefing | MiTRAA Hackathons 2026</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="mission.css?v=20260828-2">
+<link rel="stylesheet" href="responsive.css"><link rel="stylesheet" href="quality.css"></head>
+<body class="mission-page" data-mission-page="true">
+<div class="noise"></div>
+<header class="site-header">
+    <a class="brand" href="index.html">
+        <img class="brand-lockup-image" src="assets/brand-lockup.png" alt="MiTRAA Hackathons 2026">
+    </a>
+    <nav class="nav-links">
+        <a href="index.html">Home</a>
+        <a href="arenas.html">All Arenas</a>
+        <a class="btn btn-ghost" href="login.html">Login</a>
+        <a class="btn btn-primary" id="missionRegisterTop" href="register.html">Select Arena</a>
+    </nav>
+</header>
+
+<main class="mission-shell">
+    <nav class="mission-breadcrumb" aria-label="Breadcrumb">
+        <a href="index.html">Home</a><span>›</span><a href="arenas.html">Arenas</a><span>›</span><b>Mission Briefing</b>
+    </nav>
+
+    <section class="mission-hero-panel">
+        <div>
+            <span class="mission-kicker" id="missionNumber">ARENA</span>
+            <span class="mission-label">MISSION BRIEFING</span>
+            <h1 id="missionTitle">Loading mission…</h1>
+            <p id="missionPurpose">Preparing the arena brief.</p>
+            <div class="mission-hero-actions">
+                <a id="missionRegister" class="btn btn-primary btn-lg" href="register.html">Choose this mission</a>
+                <a class="btn btn-ghost btn-lg" href="arenas.html">Explore all arenas</a>
+            </div>
+        </div>
+        <aside class="mission-index-card">
+            <small>YOUR MISSION PATH</small>
+            <ol>
+                <li class="active">Understand the problem</li>
+                <li>Design the solution</li>
+                <li>Build a working POC</li>
+                <li>Prove responsible impact</li>
+            </ol>
+        </aside>
+    </section>
+
+    <section class="mission-detail-grid">
+        <article class="mission-detail-card mission-objective">
+            <span>01</span><small>MISSION OBJECTIVE</small>
+            <h2>What you need to solve</h2>
+            <p id="missionObjective"></p>
+        </article>
+        <article class="mission-detail-card">
+            <span>02</span><small>SUGGESTED DIRECTIONS</small>
+            <h2>Where you can innovate</h2>
+            <ul id="missionDirections"></ul>
+        </article>
+        <article class="mission-detail-card">
+            <span>03</span><small>EXPECTED PROOF OF CONCEPT</small>
+            <h2>What you should demonstrate</h2>
+            <p id="missionDeliverable"></p>
+        </article>
+        <article class="mission-detail-card">
+            <span>04</span><small>RESPONSIBLE INNOVATION</small>
+            <h2>How your solution earns trust</h2>
+            <p>Show measurable impact, privacy and security controls, accessibility, transparent limitations, human oversight and a realistic path to scale.</p>
+        </article>
+    </section>
+
+    <section class="mission-launch-panel">
+        <div><small id="missionLaunchLabel">READY TO BUILD?</small><h2 id="missionLaunchTitle">Turn this briefing into a working solution.</h2><p id="missionLaunchMessage">Your chosen arena will be automatically selected during registration.</p></div>
+        <a id="missionRegisterBottom" class="btn btn-primary btn-lg" href="register.html">Select arena and register</a>
+    </section>
+
+    <nav class="mission-pagination" aria-label="Arena navigation">
+        <a id="previousMission" class="btn btn-ghost" href="arenas.html">← Previous mission</a>
+        <a href="arenas.html" class="all-arenas-link">View all 15 arenas</a>
+        <a id="nextMission" class="btn btn-ghost" href="arenas.html">Next mission →</a>
+    </nav>
+</main>
+
+<script src="app.js?v=20260828-5"></script>
+<script src="quality.js" defer></script></body>
+</html>

@@ -1,0 +1,47 @@
+.member-card {
+  position: relative;
+}
+
+.remove-member {
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  border: 0;
+  background: transparent;
+  color: #ff9ca8;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.remove-member:hover,
+.remove-member:focus-visible {
+  color: #fff;
+  text-decoration: underline;
+}
+
+.team-member-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin: 16px 0;
+}
+
+.team-member-controls span {
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+@media (max-width: 640px) {
+  .team-member-controls {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .team-member-controls .btn {
+    width: 100%;
+  }
+}

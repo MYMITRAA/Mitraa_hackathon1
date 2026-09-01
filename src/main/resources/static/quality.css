@@ -1,0 +1,155 @@
+:root {
+  color-scheme: dark;
+  --focus-ring: #7df6ff;
+  --surface-border: rgba(126, 146, 199, 0.28);
+}
+
+html {
+  scroll-behavior: smooth;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  min-height: 100dvh;
+}
+
+::selection {
+  background: rgba(125, 61, 255, 0.72);
+  color: #fff;
+}
+
+:where(a, button, input, select, textarea, summary):focus-visible {
+  outline: 3px solid var(--focus-ring);
+  outline-offset: 3px;
+}
+
+.skip-link {
+  position: fixed;
+  z-index: 9999;
+  top: 12px;
+  left: 12px;
+  padding: 11px 16px;
+  border-radius: 10px;
+  background: #fff;
+  color: #080b18;
+  font-weight: 900;
+  transform: translateY(-160%);
+  transition: transform 160ms ease;
+}
+
+.skip-link:focus {
+  transform: translateY(0);
+}
+
+img {
+  max-width: 100%;
+}
+
+/* Complete MiTRAA Hackathons lockup used across public pages. */
+.brand .brand-lockup-image {
+  width: clamp(190px, 20vw, 250px);
+  height: auto;
+  max-height: 58px;
+  object-fit: contain;
+  object-position: left center;
+  border-radius: 0;
+  background: transparent;
+  padding: 0;
+  filter: none;
+}
+
+@media (max-width: 640px) {
+  .brand .brand-lockup-image {
+    width: 180px;
+    max-height: 48px;
+  }
+}
+
+/* Keep the participant navigation visible for the full desktop scroll. */
+@media (min-width: 981px) {
+  .dashboard {
+    display: block;
+    min-height: 100vh;
+    padding-left: 250px;
+  }
+
+  .dashboard > .sidebar {
+    position: fixed;
+    z-index: 45;
+    inset: 0 auto 0 0;
+    width: 250px;
+    height: 100dvh;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+  }
+
+  .dashboard > .dash-main {
+    width: 100%;
+    min-width: 0;
+    margin: 0;
+  }
+}
+
+button,
+.btn,
+summary,
+a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+button:disabled,
+.btn:disabled,
+[aria-disabled="true"] {
+  cursor: not-allowed;
+  filter: saturate(0.5);
+  opacity: 0.58;
+}
+
+.form-status:not(:empty) {
+  min-height: 1.4em;
+  overflow-wrap: anywhere;
+}
+
+.panel,
+.glass-card,
+.domain-card,
+.member-card {
+  border-color: var(--surface-border);
+}
+
+@media (hover: hover) {
+  .btn,
+  .domain-card,
+  .panel,
+  .glass-card {
+    transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@media (forced-colors: active) {
+  .btn,
+  .panel,
+  .glass-card,
+  input,
+  select,
+  textarea {
+    border: 1px solid CanvasText;
+  }
+}

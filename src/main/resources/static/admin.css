@@ -1,0 +1,236 @@
+.admin-layout {
+    grid-template-columns: 260px minmax(0, 1fr);
+}
+
+.admin-sidebar {
+    overflow: auto;
+}
+
+.admin-sidebar .btn {
+    width: 100%;
+    margin-top: 14px;
+}
+
+.admin-sidebar .admin-home {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 18px 0 8px;
+    padding: 10px;
+    border: 1px solid #344263;
+    border-radius: 12px;
+    background: linear-gradient(90deg, #702cff24, #18e2f212);
+    color: #ffffff;
+    font-weight: 800;
+}
+
+.admin-home span {
+    display: grid;
+    place-items: center;
+    width: 25px;
+    height: 25px;
+    border-radius: 8px;
+    background: #18e2f220;
+    color: var(--cyan);
+    font-size: 18px;
+}
+
+.admin-home:hover,
+.admin-home:focus-visible {
+    border-color: var(--cyan);
+    transform: translateX(3px);
+    outline: none;
+}
+
+.admin-actions {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.refresh-status {
+    flex-basis: 100%;
+    color: var(--muted);
+    font-size: 12px;
+    text-align: right;
+}
+
+.refresh-status.loading {
+    color: #8fdfea;
+}
+
+.refresh-status.success {
+    color: #71e7aa;
+}
+
+.refresh-status.error {
+    color: #ff9caf;
+}
+
+#refreshAll.is-loading::before {
+    content: "";
+    width: 14px;
+    height: 14px;
+    margin-right: 9px;
+    border: 2px solid #08101f66;
+    border-top-color: #08101f;
+    border-radius: 50%;
+    animation: admin-spin .7s linear infinite;
+}
+
+.admin-kpis.just-refreshed .kpi {
+    animation: admin-refresh-pulse .65s ease;
+}
+
+@keyframes admin-spin {
+    to { transform: rotate(360deg); }
+}
+
+@keyframes admin-refresh-pulse {
+    50% {
+        border-color: #3de4d6;
+        box-shadow: 0 0 0 3px #3de4d618;
+        transform: translateY(-2px);
+    }
+}
+
+.admin-kpis {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(150px, 1fr));
+    gap: 14px;
+    margin: 20px 0;
+}
+
+.table-search {
+    width: min(280px, 100%);
+    padding: 11px 14px;
+    border: 1px solid #354064;
+    border-radius: 12px;
+    background: #090c16;
+    color: #ffffff;
+}
+
+.wide-table {
+    min-width: 1250px;
+}
+
+.table td {
+    vertical-align: top;
+}
+
+.table small {
+    display: block;
+    color: var(--muted);
+}
+
+.table a {
+    color: var(--cyan);
+}
+
+.status-pill {
+    display: inline-block;
+    padding: 4px 8px;
+    border: 1px solid #405077;
+    border-radius: 999px;
+    font-size: 10px;
+    font-weight: 900;
+}
+
+.status-pill.ok {
+    color: #71e7aa;
+    border-color: #2e805d;
+}
+
+.status-pill.warn {
+    color: #ffc16f;
+    border-color: #87632c;
+}
+
+.status-pill.bad {
+    color: #ff91a6;
+    border-color: #83384a;
+}
+
+.money-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+.money-grid div {
+    padding: 18px;
+    border: 1px solid #283454;
+    border-radius: 15px;
+}
+
+.money-grid strong {
+    display: block;
+    font-size: 28px;
+}
+
+.empty-row {
+    text-align: center;
+    color: var(--muted);
+}
+
+.admin-dialog {
+    width: min(760px, calc(100% - 32px));
+    max-height: 90vh;
+    overflow-y: auto;
+    border: 1px solid #354064;
+    border-radius: 20px;
+    background: #090c16;
+    color: #ffffff;
+}
+
+.admin-dialog::backdrop {
+    background: rgba(0, 0, 0, 0.78);
+    backdrop-filter: blur(6px);
+}
+
+.admin-dialog .auth-form {
+    width: 100%;
+}
+
+.btn-danger {
+    border-color: #83384a;
+    color: #ff91a6;
+    background: rgba(131, 56, 74, 0.12);
+}
+
+.btn-danger:hover {
+    background: rgba(131, 56, 74, 0.3);
+}
+
+@media (max-width: 980px) {
+    .admin-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .admin-sidebar {
+        display: none;
+    }
+
+    .admin-kpis {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 640px) {
+    .admin-kpis {
+        grid-template-columns: 1fr;
+    }
+
+    .dash-top {
+        display: block;
+    }
+
+    .admin-actions {
+        margin-top: 12px;
+    }
+
+    .money-grid {
+        grid-template-columns: 1fr;
+    }
+}

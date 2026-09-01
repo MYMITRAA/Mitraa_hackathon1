@@ -1,0 +1,1 @@
+ALTER TABLE payments ADD COLUMN paid_at TIMESTAMP(6) NULL;

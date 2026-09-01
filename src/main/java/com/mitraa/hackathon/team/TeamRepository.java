@@ -1,0 +1,1 @@
+package com.mitraa.hackathon.team; import com.mitraa.hackathon.registration.Registration; import org.springframework.data.jpa.repository.JpaRepository; import java.util.Optional; public interface TeamRepository extends JpaRepository<Team,Long>{Optional<Team> findByRegistration(Registration registration);boolean existsByCode(String code);}

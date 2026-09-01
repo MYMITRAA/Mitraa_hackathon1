@@ -1,0 +1,14 @@
+spring:
+  datasource:
+    url: ${DB_URL:jdbc:mysql://localhost:3306/mitraa_hackathons?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC}
+    username: root
+    password: NewPassword123
+    driver-class-name: com.mysql.cj.jdbc.Driver
+server:
+  servlet:
+    session:
+      cookie:
+        secure: true
+app:
+  bootstrap-admin:
+    enabled: false

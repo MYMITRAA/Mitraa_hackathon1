@@ -1,0 +1,2 @@
+package com.mitraa.hackathon.team; import jakarta.validation.Valid; import jakarta.validation.constraints.*; import java.time.LocalDate; import java.util.List;
+public record TeamRequest(@NotBlank @Size(max=100) String teamName,@NotNull @Size(min=2,max=4) List<@Valid Member> members){public record Member(@NotBlank @Size(max=120)String fullName,@NotBlank @Email @Size(max=190)String email,@NotNull @Past LocalDate dateOfBirth,@NotBlank @Size(max=80)String country,boolean guardianConsent){}}

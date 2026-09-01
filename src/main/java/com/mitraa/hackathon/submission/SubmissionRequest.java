@@ -1,0 +1,2 @@
+package com.mitraa.hackathon.submission; import jakarta.validation.constraints.*;
+public record SubmissionRequest(@NotBlank @Size(max=140)String projectName,@NotBlank @Size(max=2000)String problemStatement,@NotBlank @Size(max=4000)String solutionSummary,@NotBlank @Size(max=1000)String technologyStack,@Size(max=500)String repositoryUrl,@Size(max=500)String demoUrl,@NotBlank @Size(max=2000)String responsibleAi){}

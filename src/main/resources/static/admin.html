@@ -1,0 +1,660 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1">
+
+    <meta name="robots" content="noindex,nofollow">
+
+    <title>Admin Command Center | MiTRAA</title>
+
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="enhancements.css">
+    <link rel="stylesheet" href="account.css">
+    <link rel="stylesheet" href="admin.css?v=20260828-2">
+<link rel="stylesheet" href="responsive.css"><link rel="stylesheet" href="quality.css"></head>
+
+<body data-admin-dashboard="true">
+
+<div class="dashboard admin-layout">
+
+    <aside class="sidebar admin-sidebar">
+
+        <a class="brand" href="/">
+            <img src="assets/company-logo.svg" alt="MiTRAA">
+
+            <span>
+                <b>MiTRAA</b>
+                <small>COMMAND CENTER</small>
+            </span>
+        </a>
+
+        <nav class="side-nav">
+            <a href="/index.html" class="admin-home" aria-label="Open the MiTRAA public home page">
+                <span aria-hidden="true">⌂</span>
+                Home
+            </a>
+            <a href="#overview" class="active">Overview</a>
+            <a href="#users">Users</a>
+            <a href="#registrations">Registrations</a>
+            <a href="#teams">Teams &amp; members</a>
+            <a href="#payments">Payments</a>
+            <a href="#submissions">Submissions</a>
+            <a href="#guardian-audit">Guardian consent</a>
+            <a href="#notifications">Notifications</a>
+            <a href="/change-password.html">Change password</a>
+
+            <button
+                id="adminLogout"
+                type="button"
+                class="btn btn-ghost">
+                Logout
+            </button>
+        </nav>
+
+    </aside>
+
+    <main class="dash-main" id="overview">
+
+        <div class="dash-top">
+
+            <div>
+                <small class="eyebrow">
+                    AUTHORIZED OPERATIONS
+                </small>
+
+                <h1>Event Command Center</h1>
+            </div>
+
+            <div class="admin-actions">
+
+                <button
+                    id="refreshAll"
+                    type="button"
+                    class="btn btn-primary">
+                    Refresh all
+                </button>
+
+                <a class="btn btn-ghost" href="/">
+                    Public website
+                </a>
+
+                <span id="refreshStatus" class="refresh-status" role="status" aria-live="polite">
+                    Live data loaded
+                </span>
+
+            </div>
+
+        </div>
+
+        <p class="auth-note">
+            Live MySQL-backed operations. Passwords, OTP hashes and
+            gateway secrets are never displayed.
+        </p>
+
+        <div class="admin-kpis">
+
+            <div class="kpi">
+                <small>Users</small>
+                <strong data-metric="participants">0</strong>
+            </div>
+
+            <div class="kpi">
+                <small>Registrations</small>
+                <strong data-metric="registrations">0</strong>
+            </div>
+
+            <div class="kpi">
+                <small>Individual entries</small>
+                <strong data-metric="individual">0</strong>
+            </div>
+
+            <div class="kpi">
+                <small>Team entries</small>
+                <strong data-metric="teamEntries">0</strong>
+            </div>
+
+            <div class="kpi">
+                <small>Teams created</small>
+                <strong data-metric="teams">0</strong>
+            </div>
+
+            <div class="kpi">
+                <small>People in teams</small>
+                <strong data-metric="teamMembers">0</strong>
+            </div>
+
+            <div class="kpi">
+                <small>Confirmed</small>
+                <strong data-metric="confirmed">0</strong>
+            </div>
+
+            <div class="kpi">
+                <small>Pending payment</small>
+                <strong data-metric="pendingPayment">0</strong>
+            </div>
+
+            <div class="kpi">
+                <small>POC submitted</small>
+                <strong data-metric="pocSubmitted">0</strong>
+            </div>
+
+            <div class="kpi">
+                <small>Failed notifications</small>
+                <strong data-metric="notificationsFailed">0</strong>
+            </div>
+
+        </div>
+
+        <div class="panel-grid">
+
+            <section class="panel">
+
+                <h3>Revenue</h3>
+
+                <div class="money-grid">
+
+                    <div>
+                        <small>INR captured</small>
+
+                        <strong>
+                            ₹<span data-metric="revenueInr">0</span>
+                        </strong>
+                    </div>
+
+                    <div>
+                        <small>USD captured</small>
+
+                        <strong>
+                            $<span data-metric="revenueUsd">0</span>
+                        </strong>
+                    </div>
+
+                </div>
+
+            </section>
+
+            <section class="panel">
+
+                <h3>POC pipeline</h3>
+
+                <table class="table">
+                    <tbody>
+                    <tr>
+                        <td>Drafts</td>
+                        <td data-metric="pocDrafts">0</td>
+                    </tr>
+
+                    <tr>
+                        <td>Submitted</td>
+                        <td data-metric="pocSubmitted">0</td>
+                    </tr>
+
+                    <tr>
+                        <td>Notifications pending</td>
+                        <td data-metric="notificationsPending">0</td>
+                    </tr>
+                    </tbody>
+                </table>
+
+            </section>
+
+        </div>
+
+        <section id="users" class="panel workflow-panel">
+
+            <div class="section-line">
+
+                <div>
+                    <small class="eyebrow">ACCESS CONTROL</small>
+                    <h3>Users</h3>
+                </div>
+
+                <div class="admin-actions">
+
+                    <input
+                        class="table-search"
+                        data-filter="userRows"
+                        placeholder="Search users">
+
+                    <button
+                        id="addUser"
+                        type="button"
+                        class="btn btn-primary">
+                        Add user
+                    </button>
+
+                </div>
+
+            </div>
+
+            <div class="table-wrap">
+
+                <table class="table">
+
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name / email</th>
+                        <th>Role</th>
+                        <th>Email verified</th>
+                        <th>Access</th>
+                        <th>Created</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+
+                    <tbody id="userRows">
+                    <tr>
+                        <td colspan="7">Loading…</td>
+                    </tr>
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+        <section id="registrations" class="panel workflow-panel">
+
+            <div class="section-line">
+
+                <div>
+                    <small class="eyebrow">
+                        PARTICIPANT DIRECTORY
+                    </small>
+
+                    <h3>Registrations</h3>
+                </div>
+
+                <input
+                    class="table-search"
+                    data-filter="registrationRows"
+                    placeholder="Search registrations">
+
+            </div>
+
+            <div class="table-wrap">
+
+                <table class="table wide-table">
+
+                    <thead>
+                    <tr>
+                        <th>Player ID</th>
+                        <th>Participant</th>
+                        <th>DOB / age</th>
+                        <th>Contact</th>
+                        <th>Location</th>
+                        <th>Entry / domain</th>
+                        <th>Eligibility</th>
+                        <th>Guardian</th>
+                        <th>Status</th>
+                        <th>Created / active</th>
+                    </tr>
+                    </thead>
+
+                    <tbody id="registrationRows">
+                    <tr>
+                        <td colspan="10">Loading…</td>
+                    </tr>
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+        <section id="teams" class="panel workflow-panel">
+
+            <div class="section-line">
+
+                <div>
+                    <small class="eyebrow">
+                        SQUAD OPERATIONS
+                    </small>
+
+                    <h3>Teams and members</h3>
+                </div>
+
+                <input
+                    class="table-search"
+                    data-filter="teamRows"
+                    placeholder="Search teams or members">
+
+            </div>
+
+            <div class="table-wrap">
+
+                <table class="table wide-table">
+
+                    <thead>
+                    <tr>
+                        <th>Team</th>
+                        <th>Registration</th>
+                        <th>Role</th>
+                        <th>Member</th>
+                        <th>Email</th>
+                        <th>DOB / age</th>
+                        <th>Country</th>
+                        <th>Guardian</th>
+                        <th>Status</th>
+                    </tr>
+                    </thead>
+
+                    <tbody id="teamRows">
+                    <tr>
+                        <td colspan="9">Loading…</td>
+                    </tr>
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+        <section id="payments" class="panel workflow-panel">
+
+            <div class="section-line">
+
+                <div>
+                    <small class="eyebrow">
+                        FINANCIAL AUDIT
+                    </small>
+
+                    <h3>Payments</h3>
+                </div>
+
+                <input
+                    class="table-search"
+                    data-filter="paymentRows"
+                    placeholder="Search payments">
+
+            </div>
+
+            <div class="table-wrap">
+
+                <table class="table">
+
+                    <thead>
+                    <tr>
+                        <th>Registration</th>
+                        <th>Participant</th>
+                        <th>Amount</th>
+                        <th>Status</th>
+                        <th>Gateway order</th>
+                        <th>Payment ID</th>
+                        <th>Created / paid</th>
+                    </tr>
+                    </thead>
+
+                    <tbody id="paymentRows">
+                    <tr>
+                        <td colspan="7">Loading…</td>
+                    </tr>
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+        <section id="submissions" class="panel workflow-panel">
+
+            <div class="section-line">
+
+                <div>
+                    <small class="eyebrow">
+                        POC PIPELINE
+                    </small>
+
+                    <h3>Submissions</h3>
+                </div>
+
+                <input
+                    class="table-search"
+                    data-filter="submissionRows"
+                    placeholder="Search submissions">
+
+            </div>
+
+            <div class="table-wrap">
+
+                <table class="table wide-table">
+
+                    <thead>
+                    <tr>
+                        <th>Registration</th>
+                        <th>Participant</th>
+                        <th>Entry</th>
+                        <th>Project</th>
+                        <th>Technology</th>
+                        <th>Repository</th>
+                        <th>Demo</th>
+                        <th>Status</th>
+                        <th>Updated / submitted</th>
+                    </tr>
+                    </thead>
+
+                    <tbody id="submissionRows">
+                    <tr>
+                        <td colspan="9">Loading…</td>
+                    </tr>
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+        <section
+            id="guardian-audit"
+            class="panel workflow-panel">
+
+            <div class="section-line">
+
+                <div>
+                    <small class="eyebrow">
+                        MINOR SAFEGUARDING
+                    </small>
+
+                    <h3>Guardian consent audit</h3>
+                </div>
+
+                <input
+                    class="table-search"
+                    data-filter="guardianRows"
+                    placeholder="Search consent records">
+
+            </div>
+
+            <div class="table-wrap">
+
+                <table class="table">
+
+                    <thead>
+                    <tr>
+                        <th>Registration</th>
+                        <th>Participant</th>
+                        <th>Guardian</th>
+                        <th>Status</th>
+                        <th>Attempts</th>
+                        <th>Expires</th>
+                        <th>Consented</th>
+                        <th>Legal version</th>
+                    </tr>
+                    </thead>
+
+                    <tbody id="guardianRows">
+                    <tr>
+                        <td colspan="8">Loading…</td>
+                    </tr>
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+        <section id="notifications" class="panel workflow-panel">
+
+            <div class="section-line">
+
+                <div>
+                    <small class="eyebrow">
+                        DELIVERY AUDIT
+                    </small>
+
+                    <h3>Notifications</h3>
+                </div>
+
+                <input
+                    class="table-search"
+                    data-filter="notificationRows"
+                    placeholder="Search notifications">
+
+            </div>
+
+            <div class="table-wrap">
+
+                <table class="table wide-table">
+
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Channel</th>
+                        <th>Recipient</th>
+                        <th>Event</th>
+                        <th>Subject</th>
+                        <th>Reference</th>
+                        <th>Status</th>
+                        <th>Attempts</th>
+                        <th>Error</th>
+                        <th>Created</th>
+                    </tr>
+                    </thead>
+
+                    <tbody id="notificationRows">
+                    <tr>
+                        <td colspan="10">Loading…</td>
+                    </tr>
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+    </main>
+
+</div>
+
+<dialog id="userDialog" class="admin-dialog">
+
+    <form id="userForm" class="auth-form">
+
+        <input id="userId" type="hidden">
+
+        <div class="section-line">
+
+            <h3>User record</h3>
+
+            <button
+                type="button"
+                id="cancelUser"
+                class="btn btn-ghost">
+                Close
+            </button>
+
+        </div>
+
+        <div class="split">
+
+            <div class="field">
+                <label for="userName">Full name</label>
+
+                <input
+                    id="userName"
+                    required
+                    maxlength="120">
+            </div>
+
+            <div class="field">
+                <label for="userEmail">Email</label>
+
+                <input
+                    id="userEmail"
+                    type="email"
+                    required
+                    maxlength="190">
+            </div>
+
+        </div>
+
+        <div class="split">
+
+            <div class="field">
+                <label for="userRole">Role</label>
+
+                <select id="userRole">
+                    <option value="PARTICIPANT">
+                        PARTICIPANT
+                    </option>
+
+                    <option value="ADMIN">
+                        ADMIN
+                    </option>
+
+                    <option value="SUPER_ADMIN">
+                        SUPER_ADMIN
+                    </option>
+                </select>
+            </div>
+
+            <div class="field">
+                <label for="userPassword">
+                    Password / new password
+                </label>
+
+                <input
+                    id="userPassword"
+                    type="password"
+                    minlength="10"
+                    maxlength="72"
+                    placeholder="Required for new user">
+            </div>
+
+        </div>
+
+        <label>
+            <input id="userEnabled" type="checkbox">
+            Account enabled
+        </label>
+
+        <label>
+            <input id="userVerified" type="checkbox">
+            Email verified
+        </label>
+
+        <button class="btn btn-primary" type="submit">
+            Save user
+        </button>
+
+        <p id="userFormStatus" class="form-status"></p>
+
+    </form>
+
+</dialog>
+
+<script src="security-api.js"></script>
+<script src="admin.js?v=20260828-2"></script>
+
+<script src="quality.js" defer></script></body>
+</html>

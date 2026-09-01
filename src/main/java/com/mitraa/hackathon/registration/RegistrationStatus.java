@@ -1,0 +1,2 @@
+package com.mitraa.hackathon.registration;
+public enum RegistrationStatus { PENDING_VERIFICATION, PENDING_GUARDIAN, PENDING_SUBMISSION, PENDING_PAYMENT, CONFIRMED, CANCELLED, DISQUALIFIED }

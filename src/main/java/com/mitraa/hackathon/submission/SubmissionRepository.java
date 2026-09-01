@@ -1,0 +1,1 @@
+package com.mitraa.hackathon.submission; import com.mitraa.hackathon.registration.Registration; import org.springframework.data.jpa.repository.JpaRepository; import java.util.Optional; public interface SubmissionRepository extends JpaRepository<Submission,Long>{Optional<Submission> findByRegistration(Registration registration);long countByStatus(SubmissionStatus status);}

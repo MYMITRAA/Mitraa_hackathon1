@@ -1,0 +1,23 @@
+package com.mitraa.hackathon.submission;
+
+import com.mitraa.hackathon.registration.*;
+import com.mitraa.hackathon.team.TeamRepository;
+import com.mitraa.hackathon.user.UserRepository;
+import jakarta.validation.Valid;
+import java.time.*;
+import java.util.*;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping("/api/submissions")
+public class SubmissionController {
+ private final UserRepository users; private final RegistrationRepository registrations; private final SubmissionRepository submissions; private final TeamRepository teams;
+ public SubmissionController(UserRepository u,RegistrationRepository r,SubmissionRepository s,TeamRepository t){users=u;registrations=r;submissions=s;teams=t;}
+ @GetMapping @Transactional(readOnly=true) public ResponseEntity<?> get(Authentication a){Registration r=registration(a);Submission s=submissions.findByRegistration(r).orElse(null);if(s==null)return ResponseEntity.ok(Map.of("exists",false,"status","NOT_STARTED"));return ResponseEntity.ok(view(s));}
+ @PutMapping @Transactional public ResponseEntity<?> save(Authentication a,@Valid @RequestBody SubmissionRequest q){Registration r=registration(a);requireReady(r);Submission s=submissions.findByRegistration(r).orElseGet(()->{Submission n=new Submission();n.setRegistration(r);return n;});if(s.getStatus()!=SubmissionStatus.DRAFT)throw new IllegalArgumentException("A submitted POC can no longer be edited.");copy(s,q);s.touch();submissions.save(s);return ResponseEntity.ok(view(s));}
+ @PostMapping("/submit") @Transactional public ResponseEntity<?> submit(Authentication a,@Valid @RequestBody SubmissionRequest q){Registration r=registration(a);requireReady(r);if(LocalDate.now(ZoneOffset.UTC).isAfter(LocalDate.of(2026,10,25)))throw new IllegalArgumentException("The POC submission deadline has passed.");Submission s=submissions.findByRegistration(r).orElseGet(()->{Submission n=new Submission();n.setRegistration(r);return n;});if(s.getStatus()!=SubmissionStatus.DRAFT)throw new IllegalArgumentException("This POC has already been finally submitted.");copy(s,q);if(s.getRepositoryUrl()==null||s.getRepositoryUrl().isBlank()||s.getDemoUrl()==null||s.getDemoUrl().isBlank())throw new IllegalArgumentException("Repository and demo links are required for final submission.");s.submit();Submission saved=submissions.saveAndFlush(s);r.setStatus(RegistrationStatus.PENDING_PAYMENT);registrations.saveAndFlush(r);return ResponseEntity.ok(view(saved));}
+ private void requireReady(Registration r){if(!"DOB_VERIFIED".equals(r.getAgeVerificationStatus()))throw new IllegalArgumentException("Complete age eligibility before building the POC.");if(r.isGuardianConsentRequired()&&!r.isGuardianConsentReceived())throw new IllegalArgumentException("Guardian consent is required before building the POC.");if(r.getParticipationType()==ParticipationType.TEAM){var t=teams.findByRegistration(r).orElseThrow(()->new IllegalArgumentException("Create and lock a team before building the POC."));int total=t.getMembers().size()+1;if(total<3||total>5)throw new IllegalArgumentException("A team must contain 3 to 5 people including the leader.");}}
+ @ExceptionHandler(IllegalArgumentException.class) ResponseEntity<?> invalid(IllegalArgumentException e){return ResponseEntity.badRequest().body(Map.of("message",e.getMessage()));} private Registration registration(Authentication a){var u=users.findByEmailIgnoreCase(a.getName()).orElseThrow();return registrations.findByUser(u).orElseThrow();} private void copy(Submission s,SubmissionRequest q){s.setProjectName(q.projectName().trim());s.setProblemStatement(q.problemStatement().trim());s.setSolutionSummary(q.solutionSummary().trim());s.setTechnologyStack(q.technologyStack().trim());s.setRepositoryUrl(q.repositoryUrl()==null?null:q.repositoryUrl().trim());s.setDemoUrl(q.demoUrl()==null?null:q.demoUrl().trim());s.setResponsibleAi(q.responsibleAi().trim());} private Map<String,Object> view(Submission s){Map<String,Object> m=new LinkedHashMap<>();m.put("exists",true);m.put("projectName",s.getProjectName());m.put("problemStatement",s.getProblemStatement());m.put("solutionSummary",s.getSolutionSummary());m.put("technologyStack",s.getTechnologyStack());m.put("repositoryUrl",s.getRepositoryUrl()==null?"":s.getRepositoryUrl());m.put("demoUrl",s.getDemoUrl()==null?"":s.getDemoUrl());m.put("responsibleAi",s.getResponsibleAi());m.put("status",s.getStatus().name());m.put("submittedAt",s.getSubmittedAt()==null?"":s.getSubmittedAt().toString());return m;}}

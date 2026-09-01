@@ -1,0 +1,18 @@
+.contact-icon.social-icon {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+}
+
+.contact-lines a[href*="linkedin.com"] .contact-icon {
+  background: linear-gradient(145deg, #0a66c2, #074b8f);
+  border-color: #4ba3f5;
+  color: #fff;
+}
+
+.contact-lines a[href*="instagram.com"] .contact-icon {
+  background: linear-gradient(145deg, #833ab4, #fd1d1d 55%, #fcb045);
+  border-color: #db7adb;
+  color: #fff;
+}
