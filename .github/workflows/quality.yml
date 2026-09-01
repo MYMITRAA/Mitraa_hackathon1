@@ -1,0 +1,37 @@
+name: Quality Gate
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Set up Java 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+          cache: maven
+
+      - name: Run tests and package
+        run: mvn --batch-mode --no-transfer-progress clean verify
+
+      - name: Verify JavaScript syntax
+        run: find src/main/resources/static -maxdepth 1 -name '*.js' -print0 | xargs -0 -n1 node --check
+
+      - name: Upload test reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-reports
+          path: target/surefire-reports
+          if-no-files-found: ignore
