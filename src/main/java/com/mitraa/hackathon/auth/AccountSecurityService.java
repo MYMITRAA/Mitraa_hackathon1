@@ -158,11 +158,11 @@ public class AccountSecurityService {
             String password) {
 
         if (password == null
-                || password.length() < 10
-                || password.length() > 72) {
+                || password.length() < 8
+                || password.length() > 12) {
 
             throw new IllegalArgumentException(
-                    "Password must contain 10–72 characters."
+                    "Password must contain 8–12 characters."
             );
         }
 

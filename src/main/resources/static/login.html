@@ -1,2 +1,280 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Secure login for MiTRAA Hackathons participants and administrators."><title>Secure Login | MiTRAA Hackathons 2026</title><link rel="stylesheet" href="styles.css"><link rel="stylesheet" href="account.css"><link rel="stylesheet" href="responsive.css"><link rel="stylesheet" href="quality.css"></head>
-<body class="auth-page"><div class="auth-shell auth-shell-premium"><aside class="auth-aside auth-brand-panel"><img src="assets/mitraa-hackathons-logo.jpeg" alt="MiTRAA Hackathons"><span class="india-badge">SECURE PARTICIPANT PORTAL</span><h1>Welcome back,<br>innovator.</h1><p>Continue your registration, guardian consent, payment, team and POC journey from one protected workspace.</p><ul class="trust-list"><li>Email-verified access</li><li>Role-based participant and admin portals</li><li>Secure payment confirmation</li></ul></aside><main class="auth-main"><a href="index.html" class="auth-note">← Back to website</a><div class="auth-heading"><span class="eyebrow">ACCOUNT ACCESS</span><h2>Sign in to MiTRAA</h2><p>Use the email address you verified during registration.</p></div><div id="ssoPanel" class="sso-panel" hidden><div class="sso-grid"><a class="sso-button" data-sso-provider="google" href="/oauth2/authorization/google"><span class="sso-google" aria-hidden="true">G</span><span>Continue with Google</span></a><a class="sso-button" data-sso-provider="github" href="/oauth2/authorization/github"><span class="sso-github" aria-hidden="true">●</span><span>Continue with GitHub</span></a></div><div class="auth-divider"><span>or use your password</span></div></div><p id="ssoStatus" class="form-status" aria-live="polite"></p><form class="auth-form" id="loginForm" action="/api/auth/login" method="post"><div class="field"><label for="loginEmail">Email address</label><input required type="email" id="loginEmail" name="email" autocomplete="email" placeholder="you@example.com"></div><div class="field"><label for="loginPassword">Password</label><div class="password-control"><input required id="loginPassword" type="password" name="password" autocomplete="current-password" placeholder="Enter your password"><button class="password-toggle" type="button" data-password-toggle="loginPassword" aria-label="Show password">Show</button></div></div><button class="btn btn-primary btn-lg auth-primary" type="submit">Sign in securely</button><p id="loginStatus" class="form-status" aria-live="polite"></p></form><div class="auth-action-grid"><a class="auth-action-card" href="forgot-password.html"><b>Forgot password?</b><span>Receive a secure email reset code</span></a><a class="auth-action-card" href="register.html"><b>Create new account</b><span>Register as an individual or team</span></a><a class="auth-action-card" href="verify-email.html"><b>Verify email</b><span>Enter your six-digit activation code</span></a></div></main></div><script src="portal.js"></script><script src="sso-login.js"></script><script src="quality.js" defer></script></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1"
+  >
+
+  <meta
+    name="description"
+    content="Secure login for MiTRAA Hackathons participants and administrators."
+  >
+
+  <title>Secure Login | MiTRAA Hackathons 2026</title>
+
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="account.css">
+  <link rel="stylesheet" href="responsive.css">
+  <link rel="stylesheet" href="quality.css">
+</head>
+
+<body class="auth-page">
+
+  <div class="auth-shell auth-shell-premium">
+
+    <!-- Left branding panel -->
+    <aside class="auth-aside auth-brand-panel">
+
+      <img
+        src="assets/mitraa-hackathons-logo.jpeg"
+        alt="MiTRAA Hackathons"
+      >
+
+      <span class="india-badge">
+        SECURE PARTICIPANT PORTAL
+      </span>
+
+      <h1>
+        Welcome back,<br>
+        innovator.
+      </h1>
+
+      <p>
+        Continue your registration, guardian consent, payment,
+        team and POC journey from one protected workspace.
+      </p>
+
+      <ul class="trust-list">
+        <li>Email-verified access</li>
+        <li>Role-based participant and admin portals</li>
+        <li>Secure payment confirmation</li>
+      </ul>
+
+    </aside>
+
+    <!-- Login panel -->
+    <main class="auth-main">
+
+      <a href="index.html" class="auth-note">
+        ← Back to website
+      </a>
+
+      <div class="auth-heading">
+
+        <span class="eyebrow">
+          ACCOUNT ACCESS
+        </span>
+
+        <h2>Sign in to MiTRAA</h2>
+
+        <p>
+          Use the email address you verified during registration.
+        </p>
+
+      </div>
+
+      <!-- SSO login -->
+      <div id="ssoPanel" class="sso-panel" hidden>
+
+        <div class="sso-grid">
+
+          <a
+            class="sso-button"
+            data-sso-provider="google"
+            href="/oauth2/authorization/google"
+          >
+            <span class="sso-google" aria-hidden="true">
+              G
+            </span>
+
+            <span>Continue with Google</span>
+          </a>
+
+          <a
+            class="sso-button"
+            data-sso-provider="github"
+            href="/oauth2/authorization/github"
+          >
+            <span class="sso-github" aria-hidden="true">
+              ●
+            </span>
+
+            <span>Continue with GitHub</span>
+          </a>
+
+        </div>
+
+        <div class="auth-divider">
+          <span>or use your password</span>
+        </div>
+
+      </div>
+
+      <p
+        id="ssoStatus"
+        class="form-status"
+        aria-live="polite"
+      ></p>
+
+      <!-- Login form -->
+      <form
+        class="auth-form"
+        id="loginForm"
+        action="/api/auth/login"
+        method="post"
+      >
+
+        <div class="field">
+
+          <label for="loginEmail">
+            Email address
+          </label>
+
+          <input
+            required
+            type="email"
+            id="loginEmail"
+            name="email"
+            autocomplete="email"
+            placeholder="you@example.com"
+          >
+
+        </div>
+
+        <div class="field">
+
+          <label for="loginPassword">
+            Password
+          </label>
+
+          <div class="password-control">
+
+            <input
+              required
+              id="loginPassword"
+              type="password"
+              name="password"
+              autocomplete="current-password"
+              placeholder="Enter your password"
+            >
+
+            <button
+              class="password-toggle"
+              type="button"
+              data-password-toggle="loginPassword"
+              aria-label="Show password"
+            >
+              Show
+            </button>
+
+          </div>
+
+        </div>
+
+        <button
+          class="btn btn-primary btn-lg auth-primary"
+          type="submit"
+        >
+          Sign in securely
+        </button>
+
+        <p
+          id="loginStatus"
+          class="form-status"
+          role="status"
+          aria-live="polite"
+        ></p>
+
+      </form>
+
+      <!-- Account actions -->
+      <div class="auth-action-grid">
+
+        <a
+          class="auth-action-card"
+          href="forgot-password.html"
+        >
+          <b>Forgot password?</b>
+          <span>Receive a secure email reset code</span>
+        </a>
+
+        <a
+          class="auth-action-card"
+          href="register.html"
+        >
+          <b>Create new account</b>
+          <span>Register as an individual or team</span>
+        </a>
+
+        <a
+          class="auth-action-card"
+          href="verify-email.html"
+        >
+          <b>Verify email</b>
+          <span>Enter your six-digit activation code</span>
+        </a>
+
+      </div>
+
+    </main>
+
+  </div>
+
+  <script src="portal.js"></script>
+  <script src="sso-login.js"></script>
+  <script src="login-message.js"></script>
+  <script src="quality.js" defer></script>
+
+  <!-- Password-change redirect message -->
+  <script>
+    (() => {
+      "use strict";
+
+      const params = new URLSearchParams(
+        window.location.search
+      );
+
+      const loginStatus =
+        document.getElementById("loginStatus");
+
+      if (
+        params.get("passwordChanged") === "true" &&
+        loginStatus
+      ) {
+        loginStatus.textContent =
+          "Password changed successfully. Please sign in using your new password.";
+
+        loginStatus.classList.remove("error");
+        loginStatus.classList.add("success");
+
+        history.replaceState(
+          {},
+          document.title,
+          "/login.html"
+        );
+      }
+
+      if (
+        params.get("sessionExpired") === "true" &&
+        loginStatus
+      ) {
+        loginStatus.textContent =
+          "Your session expired. Please sign in again.";
+
+        loginStatus.classList.remove("success");
+        loginStatus.classList.add("error");
+
+        history.replaceState(
+          {},
+          document.title,
+          "/login.html"
+        );
+      }
+    })();
+  </script>
+
+</body>
+</html>

@@ -203,6 +203,25 @@
     background: rgba(131, 56, 74, 0.3);
 }
 
+#administrators[hidden] {
+    display: none !important;
+}
+
+.protected-admin {
+    display: inline-flex;
+    align-items: center;
+    min-height: 34px;
+    padding: 6px 12px;
+    border: 1px solid rgba(35, 232, 187, 0.38);
+    border-radius: 999px;
+    color: #36efc5;
+    background: rgba(35, 232, 187, 0.1);
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
 @media (max-width: 980px) {
     .admin-layout {
         grid-template-columns: 1fr;

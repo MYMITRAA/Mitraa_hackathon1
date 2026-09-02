@@ -62,6 +62,7 @@ public class SecurityConfig {
                                 "/login.html",
                                 "/verify-email.html",
                                 "/forgot-password.html",
+                                "/profile.css",
                                 "/privacy.html",
                                 "/terms.html",
                                 "/rules.html",
@@ -120,6 +121,9 @@ public class SecurityConfig {
                         // Participant-only access
                         .requestMatchers(
                                 "/dashboard.html",
+                                "/profile.html",
+                                "/profile.js",
+                                "/api/profile/**",
                                 "/api/payments/**",
                                 "/api/verification/**",
                                 "/api/guardian/**",

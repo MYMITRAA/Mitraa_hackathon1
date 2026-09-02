@@ -1,0 +1,90 @@
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Update Profile | MiTRAA</title>
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="/account.css">
+  <link rel="stylesheet" href="/profile.css">
+  <link rel="stylesheet" href="/responsive.css">
+  <link rel="stylesheet" href="/quality.css">
+</head>
+<body class="auth-page profile-page">
+<div class="auth-shell auth-shell-premium profile-shell">
+  <aside class="auth-aside auth-brand-panel profile-aside">
+    <img src="/assets/mitraa-white-logo.png" alt="MiTRAA">
+    <span class="india-badge">PLAYER PROFILE</span>
+    <h1>Keep your<br>identity current.</h1>
+    <p>Update your name and mobile number instantly. A changed email becomes active only after secure OTP verification.</p>
+    <ul class="trust-list">
+      <li>Verified email identity</li>
+      <li>Secure OTP confirmation</li>
+      <li>Protected participant details</li>
+    </ul>
+  </aside>
+
+  <main class="auth-main profile-main">
+    <header class="profile-header">
+      <a href="/dashboard.html" class="back-link">← Back to dashboard</a>
+      <span class="profile-security-mark">● Secure account</span>
+    </header>
+
+    <div class="auth-heading profile-heading">
+      <span class="eyebrow">ACCOUNT SETTINGS</span>
+      <h2>Personal information</h2>
+      <p>Manage the details connected with your Player ID.</p>
+    </div>
+
+    <form id="profileForm" class="auth-form profile-form-card">
+      <div class="profile-card-title">
+        <span class="profile-card-icon" aria-hidden="true">✦</span>
+        <div><h3>Your profile</h3><p>Name and phone save immediately.</p></div>
+      </div>
+      <div class="field"><label for="profileName">Full name</label><input id="profileName" name="fullName" required maxlength="120" autocomplete="name" placeholder="Enter your full name"></div>
+      <div class="field">
+        <div class="profile-label-row"><label for="profileEmail">Email address</label><span id="emailBadge" class="verification-badge">Checking…</span></div>
+        <input id="profileEmail" name="email" type="email" required maxlength="190" autocomplete="email" placeholder="you@example.com">
+        <small id="emailHelp" class="auth-note">Your verified login email.</small>
+      </div>
+      <div class="field">
+        <label for="profilePhone">Phone number</label>
+        <input id="profilePhone" name="phone" type="tel" required maxlength="16" inputmode="tel" autocomplete="tel" placeholder="+919938330784">
+        <small class="auth-note">Use 6–15 digits. International + prefix is allowed.</small>
+      </div>
+      <button class="btn btn-primary btn-lg profile-save-button" type="submit"><span>Save profile changes</span><span aria-hidden="true">→</span></button>
+      <p id="profileStatus" class="form-status" aria-live="polite"></p>
+    </form>
+
+    <section id="emailVerificationPanel" class="email-verification-panel" hidden>
+      <div class="verification-heading">
+        <span class="verification-icon" aria-hidden="true">✉</span>
+        <div><span class="eyebrow">VERIFY NEW EMAIL</span><h3>Check your inbox</h3></div>
+        <span class="verification-timer">10 min</span>
+      </div>
+      <p class="verification-copy">We sent a six-digit verification code to <strong id="pendingEmailText"></strong>.</p>
+      <label class="otp-label" for="profileOtp1">Verification code</label>
+      <div id="profileOtpBoxes" class="profile-otp-boxes" role="group" aria-label="Six-digit verification code">
+        <input id="profileOtp1" class="profile-otp-digit" inputmode="numeric" maxlength="1" autocomplete="one-time-code" aria-label="Digit 1">
+        <input class="profile-otp-digit" inputmode="numeric" maxlength="1" aria-label="Digit 2">
+        <input class="profile-otp-digit" inputmode="numeric" maxlength="1" aria-label="Digit 3">
+        <input class="profile-otp-digit" inputmode="numeric" maxlength="1" aria-label="Digit 4">
+        <input class="profile-otp-digit" inputmode="numeric" maxlength="1" aria-label="Digit 5">
+        <input class="profile-otp-digit" inputmode="numeric" maxlength="1" aria-label="Digit 6">
+      </div>
+      <div class="profile-actions">
+        <button id="verifyProfileEmail" class="btn btn-primary verify-email-button" type="button">Verify new email</button>
+        <button id="resendProfileOtp" class="resend-button" type="button">Didn't receive it? <b>Resend code</b></button>
+      </div>
+      <p id="otpStatus" class="form-status" aria-live="polite"></p>
+      <p class="verification-footnote">Your current email remains active until verification is complete.</p>
+    </section>
+  </main>
+</div>
+<script src="/security-api.js"></script>
+<script src="/profile.js"></script>
+<script src="/quality.js" defer></script>
+</body>
+</html>

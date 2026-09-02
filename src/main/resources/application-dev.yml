@@ -4,6 +4,17 @@ spring:
     username: root
     password: NewPassword123
     driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+
+server:
+  servlet:
+    session:
+      cookie:
+        secure: false
+
 app:
   bootstrap-admin:
     enabled: true

@@ -5,7 +5,7 @@ import java.time.LocalDate;
 public record RegisterRequest(
  @NotBlank @Size(max=120) String fullName,
  @NotBlank @Email @Size(max=190) String email,
- @NotBlank @Size(min=10,max=72) String password,
+ @NotBlank @Size(min=8,max=12, message="Password must contain 8–12 characters") String password,
  @NotNull @Past LocalDate dateOfBirth,
  @NotBlank @Size(max=40) String phone,
  @NotBlank @Size(max=80) String country,

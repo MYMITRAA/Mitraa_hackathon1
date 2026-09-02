@@ -366,6 +366,53 @@ public class NotificationService {
         );
     }
 
+    @Transactional
+    public void queueProfileEmailCode(User user, String destinationEmail, String code) {
+        String content =
+                greeting(user)
+                + "<p style='margin:0 0 18px;color:#4d4660;line-height:1.7'>"
+                + "Use this single-use code to verify your new email address. "
+                + "It expires in <b>10 minutes</b>.</p>"
+                + otpCard(code)
+                + notice(
+                        "Your current login email will remain active until this code is verified. "
+                        + "Do not share this OTP with anyone."
+                )
+                + footerText(
+                        "If you did not request this email change, keep using your current email "
+                        + "and contact info@mitratechgroup.com."
+                );
+
+        queue(
+                NotificationChannel.EMAIL,
+                destinationEmail,
+                "Verify your new MiTRAA email address",
+                emailShell("EMAIL CHANGE", "Verify your new email", content),
+                "EMAIL_CHANGE",
+                "USER-" + user.getId()
+        );
+    }
+
+    @Transactional
+    public void queueProfileEmailChanged(User user) {
+        String content =
+                greeting(user)
+                + notice("Your new email address has been verified and is now your MiTRAA login email.")
+                + actionButton("Sign in with new email", publicBaseUrl + "/login.html")
+                + footerText(
+                        "If you did not make this change, contact info@mitratechgroup.com immediately."
+                );
+
+        queue(
+                NotificationChannel.EMAIL,
+                user.getEmail(),
+                "Your MiTRAA email address was updated",
+                emailShell("PROFILE UPDATED", "Email changed successfully", content),
+                "PROFILE_EMAIL_CHANGED",
+                "USER-" + user.getId()
+        );
+    }
+
     private String emailShell(
             String label,
             String title,

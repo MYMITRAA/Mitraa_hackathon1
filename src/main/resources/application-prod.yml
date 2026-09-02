@@ -4,11 +4,27 @@ spring:
     username: root
     password: NewPassword123
     driver-class-name: com.mysql.cj.jdbc.Driver
+
+    hikari:
+      minimum-idle: ${DB_POOL_MIN_IDLE:5}
+      maximum-pool-size: ${DB_POOL_MAX_SIZE:20}
+      connection-timeout: ${DB_CONNECTION_TIMEOUT:30000}
+      validation-timeout: ${DB_VALIDATION_TIMEOUT:5000}
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+
 server:
   servlet:
     session:
       cookie:
         secure: true
+        http-only: true
+        same-site: lax
+
 app:
   bootstrap-admin:
-    enabled: false
+    enabled: true
+    email: sk.litonn1@gmail.com
+    password: "MitraaAdmin@123"

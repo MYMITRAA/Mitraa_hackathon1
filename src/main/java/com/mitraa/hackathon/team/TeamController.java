@@ -1,7 +1,273 @@
 package com.mitraa.hackathon.team;
-import com.mitraa.hackathon.registration.*; import com.mitraa.hackathon.user.UserRepository; import jakarta.validation.Valid; import org.springframework.http.*; import org.springframework.security.core.Authentication; import org.springframework.transaction.annotation.Transactional; import org.springframework.web.bind.annotation.*; import java.time.*; import java.util.*;
-@RestController @RequestMapping("/api/teams")
-public class TeamController { private final UserRepository users; private final RegistrationRepository registrations; private final TeamRepository teams; public TeamController(UserRepository u,RegistrationRepository r,TeamRepository t){users=u;registrations=r;teams=t;}
- @GetMapping @Transactional(readOnly=true) public ResponseEntity<?> mine(Authentication a){Registration r=registration(a);Team t=teams.findByRegistration(r).orElse(null);if(t==null)return ResponseEntity.ok(Map.of("configured",false,"requiredMembers",3));return ResponseEntity.ok(Map.of("configured",true,"teamName",t.getName(),"teamCode",t.getCode(),"memberCount",t.getMembers().size()+1,"members",t.getMembers().stream().map(m->Map.of("name",m.getFullName(),"email",m.getEmail(),"country",m.getCountry())).toList()));}
- @PostMapping @Transactional public ResponseEntity<?> create(Authentication a,@Valid @RequestBody TeamRequest req){Registration r=registration(a);if(r.getParticipationType()!=ParticipationType.TEAM)return ResponseEntity.badRequest().body(Map.of("message","Only team registrations can create a team."));if(teams.findByRegistration(r).isPresent())return ResponseEntity.status(409).body(Map.of("message","A team already exists for this registration."));Team t=new Team();t.setRegistration(r);t.setName(req.teamName().trim());t.setCode(code());for(var x:req.members()){int age=Period.between(x.dateOfBirth(),LocalDate.now(Clock.systemUTC())).getYears();if(age<10||age>35)throw new IllegalArgumentException("Every team member must be aged 10–35.");if(age<18&&!x.guardianConsent())throw new IllegalArgumentException("Guardian consent is required for every team member under 18.");TeamMember m=new TeamMember();m.setFullName(x.fullName().trim());m.setEmail(x.email().trim().toLowerCase(Locale.ROOT));m.setDateOfBirth(x.dateOfBirth());m.setCountry(x.country().trim());m.setGuardianConsent(x.guardianConsent());t.addMember(m);}teams.save(t);return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("teamCode",t.getCode(),"memberCount",t.getMembers().size()+1,"message","Team created successfully."));}
- @ExceptionHandler(IllegalArgumentException.class) ResponseEntity<?> invalid(IllegalArgumentException e){return ResponseEntity.badRequest().body(Map.of("message",e.getMessage()));} private Registration registration(Authentication a){var u=users.findByEmailIgnoreCase(a.getName()).orElseThrow();return registrations.findByUser(u).orElseThrow();} private String code(){String c;do{c="TEAM-"+UUID.randomUUID().toString().replace("-","").substring(0,8).toUpperCase(Locale.ROOT);}while(teams.existsByCode(c));return c;}}
+
+import com.mitraa.hackathon.registration.ParticipationType;
+import com.mitraa.hackathon.registration.Registration;
+import com.mitraa.hackathon.registration.RegistrationRepository;
+import com.mitraa.hackathon.user.User;
+import com.mitraa.hackathon.user.UserRepository;
+import jakarta.validation.Valid;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.time.Clock;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.Period;
+import java.util.LinkedHashMap;
+import java.util.Locale;
+import java.util.Map;
+import java.util.UUID;
+
+@RestController
+@RequestMapping("/api/teams")
+public class TeamController {
+
+    private final UserRepository userRepository;
+    private final RegistrationRepository registrationRepository;
+    private final TeamRepository teamRepository;
+
+    public TeamController(
+        UserRepository userRepository,
+        RegistrationRepository registrationRepository,
+        TeamRepository teamRepository
+    ) {
+        this.userRepository = userRepository;
+        this.registrationRepository = registrationRepository;
+        this.teamRepository = teamRepository;
+    }
+
+    @GetMapping
+    @Transactional(readOnly = true)
+    public ResponseEntity<?> getMyTeam(Authentication authentication) {
+
+        Registration registration = findRegistration(authentication);
+
+        Team team = teamRepository
+            .findByRegistration(registration)
+            .orElse(null);
+
+        if (team == null) {
+            return ResponseEntity.ok(
+                Map.of(
+                    "configured", false,
+                    "requiredMembers", 3,
+                    "maximumMembers", 5
+                )
+            );
+        }
+
+        Map<String, Object> response = new LinkedHashMap<>();
+
+        response.put("configured", true);
+        response.put("teamName", team.getName());
+        response.put("teamCode", team.getCode());
+        response.put("status", team.getStatus());
+        response.put("memberCount", team.getMembers().size() + 1);
+
+        response.put(
+            "members",
+            team.getMembers()
+                .stream()
+                .map(member -> Map.of(
+                    "name", member.getFullName(),
+                    "email", member.getEmail(),
+                    "country", member.getCountry()
+                ))
+                .toList()
+        );
+
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping
+    @Transactional
+    public ResponseEntity<?> createTeam(
+        Authentication authentication,
+        @Valid @RequestBody TeamRequest request
+    ) {
+
+        Registration registration = findRegistration(authentication);
+
+        if (registration.getParticipationType() != ParticipationType.TEAM) {
+            return ResponseEntity
+                .badRequest()
+                .body(Map.of(
+                    "message",
+                    "Only team registrations can create a team."
+                ));
+        }
+
+        if (teamRepository.findByRegistration(registration).isPresent()) {
+            return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .body(Map.of(
+                    "message",
+                    "A team already exists for this registration."
+                ));
+        }
+
+        /*
+         * TeamRequest contains 2–4 additional members.
+         * The registered participant is the leader.
+         * Therefore, total team size becomes 3–5 members.
+         */
+        int totalMemberCount = request.members().size() + 1;
+
+        if (totalMemberCount < 3 || totalMemberCount > 5) {
+            return ResponseEntity
+                .badRequest()
+                .body(Map.of(
+                    "message",
+                    "A team must contain 3–5 total members, including the leader."
+                ));
+        }
+
+        User leader = registration.getUser();
+
+        Team team = new Team();
+
+        team.setRegistration(registration);
+
+        /*
+         * Important fix:
+         * The database requires teams.leader_user_id.
+         */
+        team.setLeaderUser(leader);
+
+        team.setName(request.teamName().trim());
+        team.setCode(generateUniqueTeamCode());
+        team.setStatus("LOCKED");
+        team.setLockedAt(Instant.now());
+
+        for (TeamRequest.Member memberRequest : request.members()) {
+
+            validateMember(memberRequest);
+
+            TeamMember member = new TeamMember();
+
+            member.setFullName(
+                memberRequest.fullName().trim()
+            );
+
+            member.setEmail(
+                memberRequest.email()
+                    .trim()
+                    .toLowerCase(Locale.ROOT)
+            );
+
+            member.setDateOfBirth(
+                memberRequest.dateOfBirth()
+            );
+
+            member.setCountry(
+                memberRequest.country().trim()
+            );
+
+            member.setGuardianConsent(
+                memberRequest.guardianConsent()
+            );
+
+            team.addMember(member);
+        }
+
+        Team savedTeam = teamRepository.save(team);
+
+        return ResponseEntity
+            .status(HttpStatus.CREATED)
+            .body(Map.of(
+                "teamCode", savedTeam.getCode(),
+                "memberCount", savedTeam.getMembers().size() + 1,
+                "message", "Team created successfully."
+            ));
+    }
+
+    private void validateMember(
+        TeamRequest.Member memberRequest
+    ) {
+
+        int age = Period.between(
+            memberRequest.dateOfBirth(),
+            LocalDate.now(Clock.systemUTC())
+        ).getYears();
+
+        if (age < 10 || age > 35) {
+            throw new IllegalArgumentException(
+                "Every team member must be aged 10–35."
+            );
+        }
+
+        if (age < 18 && !memberRequest.guardianConsent()) {
+            throw new IllegalArgumentException(
+                "Guardian consent is required for every team member under 18."
+            );
+        }
+    }
+
+    private Registration findRegistration(
+        Authentication authentication
+    ) {
+
+        if (authentication == null ||
+            authentication.getName() == null) {
+
+            throw new IllegalArgumentException(
+                "Authenticated participant was not found."
+            );
+        }
+
+        User user = userRepository
+            .findByEmailIgnoreCase(authentication.getName())
+            .orElseThrow(() ->
+                new IllegalArgumentException(
+                    "Authenticated user was not found."
+                )
+            );
+
+        return registrationRepository
+            .findByUser(user)
+            .orElseThrow(() ->
+                new IllegalArgumentException(
+                    "Registration was not found."
+                )
+            );
+    }
+
+    private String generateUniqueTeamCode() {
+
+        String teamCode;
+
+        do {
+            teamCode =
+                "TEAM-" +
+                UUID.randomUUID()
+                    .toString()
+                    .replace("-", "")
+                    .substring(0, 8)
+                    .toUpperCase(Locale.ROOT);
+
+        } while (teamRepository.existsByCode(teamCode));
+
+        return teamCode;
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<?> handleIllegalArgument(
+        IllegalArgumentException exception
+    ) {
+
+        return ResponseEntity
+            .badRequest()
+            .body(Map.of(
+                "message", exception.getMessage()
+            ));
+    }
+}

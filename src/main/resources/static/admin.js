@@ -25,10 +25,9 @@ const link = value => {
         }
 
         return `
-            <a
-                href="${esc(url.href)}"
-                target="_blank"
-                rel="noopener">
+            <a href="${esc(url.href)}"
+               target="_blank"
+               rel="noopener">
                 Open
             </a>
         `;
@@ -39,17 +38,14 @@ const link = value => {
 
 const pill = value => {
     const text = String(value || "—");
-
     let type = "warn";
 
     if (
-        /CONFIRMED|PAID|SENT|SUBMITTED|CONSENTED|ACTIVE|VERIFIED/
-            .test(text)
+        /CONFIRMED|PAID|SENT|SUBMITTED|CONSENTED|ACTIVE|VERIFIED/.test(text)
     ) {
         type = "ok";
     } else if (
-        /FAILED|REJECTED|DISQUALIFIED|EXPIRED/
-            .test(text)
+        /FAILED|REJECTED|DISQUALIFIED|EXPIRED/.test(text)
     ) {
         type = "bad";
     }
@@ -61,10 +57,7 @@ const pill = value => {
     `;
 };
 
-const empty = (
-    columns,
-    message = "No records found."
-) => {
+const empty = (columns, message = "No records found.") => {
     return `
         <tr>
             <td class="empty-row" colspan="${columns}">
@@ -74,17 +67,54 @@ const empty = (
     `;
 };
 
-function showError(id, columns, error) {
-    adminLoadErrors += 1;
-    byId(id).innerHTML = empty(
-        columns,
-        error.message || "Unable to load records."
-    );
-}
-
 let adminUsers = [];
 let adminLoadErrors = 0;
 let adminRefreshing = false;
+let currentAdminRole = "";
+
+function showError(id, columns, error) {
+    adminLoadErrors += 1;
+
+    const tableBody = byId(id);
+
+    if (!tableBody) {
+        return;
+    }
+
+    const message = String(
+        error.message || "Unable to load records."
+    );
+
+    tableBody.innerHTML = empty(
+        columns,
+        message === "404" || /\(404\)/.test(message)
+            ? "Admin API route is missing. Rebuild the backend with the current AdminController."
+            : message
+    );
+}
+
+async function loadAdminContext() {
+    const account = await api("/api/auth/me");
+
+    currentAdminRole = account.role || "";
+
+    const isSuperAdmin =
+        currentAdminRole === "SUPER_ADMIN";
+
+    const administratorsPanel =
+        byId("administrators");
+
+    const administratorsNav =
+        byId("administratorsNav");
+
+    if (administratorsPanel) {
+        administratorsPanel.hidden = !isSuperAdmin;
+    }
+
+    if (administratorsNav) {
+        administratorsNav.hidden = !isSuperAdmin;
+    }
+}
 
 async function loadMetrics() {
     const data = await api("/api/admin/metrics");
@@ -102,7 +132,13 @@ async function loadUsers() {
     try {
         adminUsers = await api("/api/admin/users");
 
-        byId("userRows").innerHTML = adminUsers.length
+        const tableBody = byId("userRows");
+
+        if (!tableBody) {
+            return;
+        }
+
+        tableBody.innerHTML = adminUsers.length
             ? adminUsers.map(user => `
                 <tr>
                     <td>${user.id}</td>
@@ -115,7 +151,11 @@ async function loadUsers() {
                     <td>${pill(user.role)}</td>
 
                     <td>
-                        ${user.emailVerified ? "Yes" : "No"}
+                        ${
+                            user.emailVerified
+                                ? pill("VERIFIED")
+                                : pill("PENDING")
+                        }
                     </td>
 
                     <td>
@@ -152,13 +192,106 @@ async function loadUsers() {
     }
 }
 
+async function loadAdministrators() {
+    if (currentAdminRole !== "SUPER_ADMIN") {
+        return;
+    }
+
+    try {
+        const administrators = await api(
+            "/api/admin/administrators"
+        );
+
+        const tableBody = byId("administratorRows");
+
+        if (!tableBody) {
+            return;
+        }
+
+        tableBody.innerHTML = administrators.length
+            ? administrators.map(administrator => `
+                <tr>
+                    <td>${administrator.id}</td>
+
+                    <td>
+                        ${esc(administrator.fullName)}
+                        <small>
+                            ${esc(administrator.email)}
+                        </small>
+                    </td>
+
+                    <td>
+                        ${pill(administrator.role)}
+                    </td>
+
+                    <td>
+                        ${
+                            administrator.emailVerified
+                                ? pill("VERIFIED")
+                                : pill("PENDING")
+                        }
+                    </td>
+
+                    <td>
+                        ${
+                            administrator.enabled
+                                ? pill("ACTIVE")
+                                : pill("DISABLED")
+                        }
+                    </td>
+
+                    <td>
+                        ${when(administrator.createdAt)}
+                    </td>
+
+                    <td>
+                        ${
+                            administrator.role === "SUPER_ADMIN"
+                                ? `
+                                    <span class="protected-admin">
+                                        Protected
+                                    </span>
+                                `
+                                : `
+                                    <button
+                                        type="button"
+                                        class="btn btn-danger"
+                                        data-remove-administrator="${administrator.id}">
+                                        Remove admin
+                                    </button>
+                                `
+                        }
+                    </td>
+                </tr>
+            `).join("")
+            : empty(
+                7,
+                "No administrators found."
+            );
+
+    } catch (error) {
+        showError(
+            "administratorRows",
+            7,
+            error
+        );
+    }
+}
+
 async function loadRegistrations() {
     try {
         const rows = await api(
             "/api/admin/registrations"
         );
 
-        byId("registrationRows").innerHTML = rows.length
+        const tableBody =
+            byId("registrationRows");
+
+        if (!tableBody) {
+            return;
+        }
+
+        tableBody.innerHTML = rows.length
             ? rows.map(registration => `
                 <tr>
                     <td>
@@ -224,25 +357,14 @@ async function loadRegistrations() {
                                     <small>
                                         ${esc(registration.guardianName)}
                                         •
-                                        ${esc(
-                                            registration
-                                                .guardianRelationship
-                                        )}
+                                        ${esc(registration.guardianRelationship)}
                                         <br>
 
-                                        ${esc(
-                                            registration.guardianEmail
-                                        )}
+                                        ${esc(registration.guardianEmail)}
                                         •
-
-                                        ${esc(
-                                            registration.guardianPhone
-                                        )}
+                                        ${esc(registration.guardianPhone)}
                                         •
-
-                                        ${esc(
-                                            registration.guardianCountry
-                                        )}
+                                        ${esc(registration.guardianCountry)}
                                     </small>
                                 `
                                 : "Not required"
@@ -266,13 +388,20 @@ async function loadRegistrations() {
             : empty(10);
 
     } catch (error) {
-        showError("registrationRows", 10, error);
+        showError(
+            "registrationRows",
+            10,
+            error
+        );
     }
 }
 
 async function loadTeams() {
     try {
-        const teams = await api("/api/admin/teams");
+        const teams = await api(
+            "/api/admin/teams"
+        );
+
         const rows = [];
 
         teams.forEach(team => {
@@ -287,7 +416,10 @@ async function loadTeams() {
                         </small>
                     </td>
 
-                    <td>${esc(team.registrationId)}</td>
+                    <td>
+                        ${esc(team.registrationId)}
+                    </td>
+
                     <td>Leader</td>
                     <td>${esc(team.leader)}</td>
                     <td>${esc(team.leaderEmail)}</td>
@@ -298,7 +430,11 @@ async function loadTeams() {
                 </tr>
             `);
 
-            team.members.forEach(member => {
+            const members = Array.isArray(team.members)
+                ? team.members
+                : [];
+
+            members.forEach(member => {
                 rows.push(`
                     <tr>
                         <td>
@@ -314,8 +450,14 @@ async function loadTeams() {
                         </td>
 
                         <td>Member</td>
-                        <td>${esc(member.name)}</td>
-                        <td>${esc(member.email)}</td>
+
+                        <td>
+                            ${esc(member.name)}
+                        </td>
+
+                        <td>
+                            ${esc(member.email)}
+                        </td>
 
                         <td>
                             ${esc(member.dateOfBirth)}
@@ -325,7 +467,9 @@ async function loadTeams() {
                             </small>
                         </td>
 
-                        <td>${esc(member.country)}</td>
+                        <td>
+                            ${esc(member.country)}
+                        </td>
 
                         <td>
                             ${
@@ -339,14 +483,20 @@ async function loadTeams() {
                             }
                         </td>
 
-                        <td>${pill(team.status)}</td>
+                        <td>
+                            ${pill(team.status)}
+                        </td>
                     </tr>
                 `);
             });
         });
 
-        byId("teamRows").innerHTML =
-            rows.join("") || empty(9);
+        const tableBody = byId("teamRows");
+
+        if (tableBody) {
+            tableBody.innerHTML =
+                rows.join("") || empty(9);
+        }
 
     } catch (error) {
         showError("teamRows", 9, error);
@@ -359,7 +509,13 @@ async function loadPayments() {
             "/api/admin/payments"
         );
 
-        byId("paymentRows").innerHTML = rows.length
+        const tableBody = byId("paymentRows");
+
+        if (!tableBody) {
+            return;
+        }
+
+        tableBody.innerHTML = rows.length
             ? rows.map(payment => `
                 <tr>
                     <td>
@@ -376,7 +532,7 @@ async function loadPayments() {
 
                     <td>
                         ${esc(payment.currency)}
-                        ${Number(payment.amount).toFixed(2)}
+                        ${Number(payment.amount || 0).toFixed(2)}
                     </td>
 
                     <td>
@@ -395,7 +551,8 @@ async function loadPayments() {
                         ${when(payment.createdAt)}
 
                         <small>
-                            Paid: ${when(payment.paidAt)}
+                            Paid:
+                            ${when(payment.paidAt)}
                         </small>
                     </td>
                 </tr>
@@ -403,7 +560,11 @@ async function loadPayments() {
             : empty(7);
 
     } catch (error) {
-        showError("paymentRows", 7, error);
+        showError(
+            "paymentRows",
+            7,
+            error
+        );
     }
 }
 
@@ -413,7 +574,14 @@ async function loadSubmissions() {
             "/api/admin/submissions"
         );
 
-        byId("submissionRows").innerHTML = rows.length
+        const tableBody =
+            byId("submissionRows");
+
+        if (!tableBody) {
+            return;
+        }
+
+        tableBody.innerHTML = rows.length
             ? rows.map(submission => `
                 <tr>
                     <td>
@@ -465,7 +633,11 @@ async function loadSubmissions() {
             : empty(9);
 
     } catch (error) {
-        showError("submissionRows", 9, error);
+        showError(
+            "submissionRows",
+            9,
+            error
+        );
     }
 }
 
@@ -475,7 +647,13 @@ async function loadGuardians() {
             "/api/admin/guardian-consents"
         );
 
-        byId("guardianRows").innerHTML = rows.length
+        const tableBody = byId("guardianRows");
+
+        if (!tableBody) {
+            return;
+        }
+
+        tableBody.innerHTML = rows.length
             ? rows.map(guardian => `
                 <tr>
                     <td>
@@ -518,7 +696,11 @@ async function loadGuardians() {
             : empty(8);
 
     } catch (error) {
-        showError("guardianRows", 8, error);
+        showError(
+            "guardianRows",
+            8,
+            error
+        );
     }
 }
 
@@ -528,7 +710,14 @@ async function loadNotifications() {
             "/api/admin/notifications"
         );
 
-        byId("notificationRows").innerHTML = rows.length
+        const tableBody =
+            byId("notificationRows");
+
+        if (!tableBody) {
+            return;
+        }
+
+        tableBody.innerHTML = rows.length
             ? rows.map(notification => `
                 <tr>
                     <td>${notification.id}</td>
@@ -573,13 +762,20 @@ async function loadNotifications() {
             : empty(10);
 
     } catch (error) {
-        showError("notificationRows", 10, error);
+        showError(
+            "notificationRows",
+            10,
+            error
+        );
     }
 }
 
 async function loadAll() {
-    const refreshButton = byId("refreshAll");
-    const refreshStatus = byId("refreshStatus");
+    const refreshButton =
+        byId("refreshAll");
+
+    const refreshStatus =
+        byId("refreshStatus");
 
     if (adminRefreshing) {
         return;
@@ -588,13 +784,21 @@ async function loadAll() {
     adminRefreshing = true;
     adminLoadErrors = 0;
 
-    refreshButton.disabled = true;
-    refreshButton.classList.add("is-loading");
-    refreshButton.textContent = "Refreshing…";
-    refreshStatus.textContent = "Loading current database records…";
-    refreshStatus.className = "refresh-status loading";
+    if (refreshButton) {
+        refreshButton.disabled = true;
+        refreshButton.classList.add("is-loading");
+        refreshButton.textContent = "Refreshing…";
+    }
 
-    const results = await Promise.allSettled([
+    if (refreshStatus) {
+        refreshStatus.textContent =
+            "Loading current database records…";
+
+        refreshStatus.className =
+            "refresh-status loading";
+    }
+
+    const loaders = [
         loadMetrics(),
         loadUsers(),
         loadRegistrations(),
@@ -603,39 +807,77 @@ async function loadAll() {
         loadSubmissions(),
         loadGuardians(),
         loadNotifications()
-    ]);
+    ];
+
+    if (currentAdminRole === "SUPER_ADMIN") {
+        loaders.push(loadAdministrators());
+    }
+
+    const results =
+        await Promise.allSettled(loaders);
 
     const rejected = results.filter(
         result => result.status === "rejected"
     ).length;
-    const failures = rejected + adminLoadErrors;
-    const refreshedAt = new Date().toLocaleTimeString(
-        [],
-        {
-            hour: "2-digit",
-            minute: "2-digit",
-            second: "2-digit"
-        }
-    );
 
-    refreshButton.disabled = false;
-    refreshButton.classList.remove("is-loading");
-    refreshButton.textContent = "Refresh all";
+    const failures =
+        rejected + adminLoadErrors;
+
+    const refreshedAt =
+        new Date().toLocaleTimeString(
+            [],
+            {
+                hour: "2-digit",
+                minute: "2-digit",
+                second: "2-digit"
+            }
+        );
+
+    if (refreshButton) {
+        refreshButton.disabled = false;
+        refreshButton.classList.remove(
+            "is-loading"
+        );
+
+        refreshButton.textContent =
+            "Refresh all";
+    }
+
     adminRefreshing = false;
+
+    if (!refreshStatus) {
+        return;
+    }
 
     if (failures) {
         refreshStatus.textContent =
-            `Refreshed at ${refreshedAt} • ${failures} section${failures === 1 ? "" : "s"} could not be loaded`;
-        refreshStatus.className = "refresh-status error";
+            `Refreshed at ${refreshedAt} • `
+            + `${failures} section`
+            + `${failures === 1 ? "" : "s"} `
+            + "could not be loaded";
+
+        refreshStatus.className =
+            "refresh-status error";
     } else {
         refreshStatus.textContent =
             `All data refreshed ✓ ${refreshedAt}`;
-        refreshStatus.className = "refresh-status success";
 
-        const metrics = document.querySelector(".admin-kpis");
-        metrics?.classList.add("just-refreshed");
+        refreshStatus.className =
+            "refresh-status success";
+
+        const metrics =
+            document.querySelector(
+                ".admin-kpis"
+            );
+
+        metrics?.classList.add(
+            "just-refreshed"
+        );
+
         setTimeout(
-            () => metrics?.classList.remove("just-refreshed"),
+            () => metrics?.classList.remove(
+                "just-refreshed"
+            ),
             700
         );
     }
@@ -644,86 +886,242 @@ async function loadAll() {
 document
     .querySelectorAll(".table-search")
     .forEach(input => {
-        input.addEventListener("input", () => {
-            const query =
-                input.value.trim().toLowerCase();
+        input.addEventListener(
+            "input",
+            () => {
+                const query =
+                    input.value
+                        .trim()
+                        .toLowerCase();
 
-            document
-                .querySelectorAll(
-                    `#${input.dataset.filter} tr`
-                )
-                .forEach(row => {
-                    row.hidden =
-                        Boolean(query)
-                        && !row.textContent
-                            .toLowerCase()
-                            .includes(query);
-                });
-        });
+                document
+                    .querySelectorAll(
+                        `#${input.dataset.filter} tr`
+                    )
+                    .forEach(row => {
+                        row.hidden =
+                            Boolean(query)
+                            && !row.textContent
+                                .toLowerCase()
+                                .includes(query);
+                    });
+            }
+        );
     });
 
-byId("refreshAll").addEventListener(
+byId("refreshAll")?.addEventListener(
     "click",
     loadAll
 );
 
-byId("addUser").addEventListener(
+byId("addAdministrator")?.addEventListener(
     "click",
     () => {
-        byId("userForm").reset();
-        byId("userId").value = "";
-        byId("userEnabled").checked = true;
-        byId("userVerified").checked = true;
-        byId("userFormStatus").textContent = "";
-        byId("userDialog").showModal();
+        byId("administratorForm")?.reset();
+
+        const status =
+            byId("administratorFormStatus");
+
+        if (status) {
+            status.textContent = "";
+        }
+
+        byId("administratorDialog")
+            ?.showModal();
     }
 );
 
-byId("cancelUser").addEventListener(
+byId("cancelAdministrator")?.addEventListener(
     "click",
     () => {
-        byId("userDialog").close();
+        byId("administratorDialog")?.close();
     }
 );
 
-byId("userRows").addEventListener(
+byId("administratorForm")?.addEventListener(
+    "submit",
+    async event => {
+        event.preventDefault();
+
+        const status =
+            byId("administratorFormStatus");
+
+        const emailInput =
+            byId("administratorEmail");
+
+        if (!emailInput) {
+            return;
+        }
+
+        if (status) {
+            status.textContent =
+                "Adding administrator…";
+        }
+
+        try {
+            await api(
+                "/api/admin/administrators",
+                {
+                    method: "POST",
+                    body: JSON.stringify({
+                        email:
+                            emailInput.value.trim()
+                    })
+                }
+            );
+
+            byId("administratorDialog")
+                ?.close();
+
+            await Promise.all([
+                loadAdministrators(),
+                loadUsers()
+            ]);
+
+        } catch (error) {
+            if (status) {
+                status.textContent =
+                    error.message;
+            }
+        }
+    }
+);
+
+byId("administratorRows")?.addEventListener(
     "click",
     async event => {
+        const button = event.target.closest(
+            "[data-remove-administrator]"
+        );
+
+        if (!button) {
+            return;
+        }
+
+        const confirmed = confirm(
+            "Remove this administrator? "
+            + "The account will remain active "
+            + "as a participant."
+        );
+
+        if (!confirmed) {
+            return;
+        }
+
+        button.disabled = true;
+
+        try {
+            await api(
+                `/api/admin/administrators/${button.dataset.removeAdministrator}`,
+                {
+                    method: "DELETE"
+                }
+            );
+
+            await Promise.all([
+                loadAdministrators(),
+                loadUsers()
+            ]);
+
+        } catch (error) {
+            alert(error.message);
+            button.disabled = false;
+        }
+    }
+);
+
+byId("addUser")?.addEventListener(
+    "click",
+    () => {
+        byId("userForm")?.reset();
+
+        if (byId("userId")) {
+            byId("userId").value = "";
+        }
+
+        if (byId("userEnabled")) {
+            byId("userEnabled").checked = true;
+        }
+
+        if (byId("userVerified")) {
+            byId("userVerified").checked = true;
+        }
+
+        if (byId("userFormStatus")) {
+            byId("userFormStatus").textContent = "";
+        }
+
+        byId("userDialog")?.showModal();
+    }
+);
+
+byId("cancelUser")?.addEventListener(
+    "click",
+    () => {
+        byId("userDialog")?.close();
+    }
+);
+
+byId("userRows")?.addEventListener(
+    "click",
+    async event => {
+        const editButton = event.target.closest(
+            "[data-edit-user]"
+        );
+
+        const disableButton = event.target.closest(
+            "[data-disable-user]"
+        );
+
         const editId =
-            event.target.dataset.editUser;
+            editButton?.dataset.editUser;
 
         const disableId =
-            event.target.dataset.disableUser;
+            disableButton?.dataset.disableUser;
 
         if (editId) {
             const user = adminUsers.find(
-                item => String(item.id) === editId
+                item =>
+                    String(item.id) ===
+                    String(editId)
             );
 
             if (!user) {
                 return;
             }
 
-            byId("userId").value = user.id;
-            byId("userName").value = user.fullName;
-            byId("userEmail").value = user.email;
-            byId("userRole").value = user.role;
-            byId("userEnabled").checked = user.enabled;
+            byId("userId").value =
+                user.id;
+
+            byId("userName").value =
+                user.fullName;
+
+            byId("userEmail").value =
+                user.email;
+
+            byId("userRole").value =
+                user.role;
+
+            byId("userEnabled").checked =
+                user.enabled;
 
             byId("userVerified").checked =
                 user.emailVerified;
 
             byId("userPassword").value = "";
-            byId("userFormStatus").textContent = "";
 
-            byId("userDialog").showModal();
+            byId("userFormStatus").textContent =
+                "";
+
+            byId("userDialog")?.showModal();
         }
 
         if (
             disableId
             && confirm(
-                "Disable this user? Their registration, "
-                + "payment and audit records will be retained."
+                "Disable this user? Their "
+                + "registration, payment and "
+                + "audit records will be retained."
             )
         ) {
             try {
@@ -736,6 +1134,13 @@ byId("userRows").addEventListener(
 
                 await loadUsers();
 
+                if (
+                    currentAdminRole ===
+                    "SUPER_ADMIN"
+                ) {
+                    await loadAdministrators();
+                }
+
             } catch (error) {
                 alert(error.message);
             }
@@ -743,24 +1148,35 @@ byId("userRows").addEventListener(
     }
 );
 
-byId("userForm").addEventListener(
+byId("userForm")?.addEventListener(
     "submit",
     async event => {
         event.preventDefault();
 
-        const id = byId("userId").value;
+        const id =
+            byId("userId").value;
 
         const body = {
-            fullName: byId("userName").value,
-            email: byId("userEmail").value,
-            role: byId("userRole").value,
-            enabled: byId("userEnabled").checked,
-            emailVerified: byId("userVerified").checked
+            fullName:
+                byId("userName").value.trim(),
+
+            email:
+                byId("userEmail").value.trim(),
+
+            role:
+                byId("userRole").value,
+
+            enabled:
+                byId("userEnabled").checked,
+
+            emailVerified:
+                byId("userVerified").checked
         };
 
         if (id) {
             body.newPassword =
-                byId("userPassword").value || null;
+                byId("userPassword").value
+                || null;
         } else {
             body.password =
                 byId("userPassword").value;
@@ -770,22 +1186,38 @@ byId("userForm").addEventListener(
             await api(
                 `/api/admin/users${id ? "/" + id : ""}`,
                 {
-                    method: id ? "PUT" : "POST",
-                    body: JSON.stringify(body)
+                    method:
+                        id ? "PUT" : "POST",
+
+                    body:
+                        JSON.stringify(body)
                 }
             );
 
-            byId("userDialog").close();
+            byId("userDialog")?.close();
+
             await loadUsers();
 
+            if (
+                currentAdminRole ===
+                "SUPER_ADMIN"
+            ) {
+                await loadAdministrators();
+            }
+
         } catch (error) {
-            byId("userFormStatus").textContent =
-                error.message;
+            const status =
+                byId("userFormStatus");
+
+            if (status) {
+                status.textContent =
+                    error.message;
+            }
         }
     }
 );
 
-byId("adminLogout").addEventListener(
+byId("adminLogout")?.addEventListener(
     "click",
     async () => {
         try {
@@ -795,10 +1227,35 @@ byId("adminLogout").addEventListener(
                     method: "POST"
                 }
             );
+        } catch (error) {
+            console.error(
+                "Logout request failed:",
+                error
+            );
         } finally {
-            location.href = "/login.html";
+            window.location.href =
+                "/login.html";
         }
     }
 );
 
-loadAll();
+async function initializeAdmin() {
+    try {
+        await loadAdminContext();
+        await loadAll();
+
+    } catch (error) {
+        const status =
+            byId("refreshStatus");
+
+        if (status) {
+            status.textContent =
+                error.message;
+
+            status.className =
+                "refresh-status error";
+        }
+    }
+}
+
+initializeAdmin();

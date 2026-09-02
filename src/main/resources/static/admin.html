@@ -1,19 +1,26 @@
 <!doctype html>
 <html lang="en">
+
 <head>
     <meta charset="utf-8">
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1">
 
-    <meta name="robots" content="noindex,nofollow">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1">
+
+    <meta
+        name="robots"
+        content="noindex,nofollow">
 
     <title>Admin Command Center | MiTRAA</title>
 
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="enhancements.css">
     <link rel="stylesheet" href="account.css">
-    <link rel="stylesheet" href="admin.css?v=20260828-2">
-<link rel="stylesheet" href="responsive.css"><link rel="stylesheet" href="quality.css"></head>
+    <link rel="stylesheet" href="admin.css?v=20260902-3">
+    <link rel="stylesheet" href="responsive.css">
+    <link rel="stylesheet" href="quality.css">
+</head>
 
 <body data-admin-dashboard="true">
 
@@ -22,7 +29,9 @@
     <aside class="sidebar admin-sidebar">
 
         <a class="brand" href="/">
-            <img src="assets/company-logo.svg" alt="MiTRAA">
+            <img
+                src="assets/company-logo.svg"
+                alt="MiTRAA">
 
             <span>
                 <b>MiTRAA</b>
@@ -31,19 +40,58 @@
         </a>
 
         <nav class="side-nav">
-            <a href="/index.html" class="admin-home" aria-label="Open the MiTRAA public home page">
+
+            <a
+                href="/index.html"
+                class="admin-home"
+                aria-label="Open the MiTRAA public home page">
+
                 <span aria-hidden="true">⌂</span>
                 Home
             </a>
-            <a href="#overview" class="active">Overview</a>
-            <a href="#users">Users</a>
-            <a href="#registrations">Registrations</a>
-            <a href="#teams">Teams &amp; members</a>
-            <a href="#payments">Payments</a>
-            <a href="#submissions">Submissions</a>
-            <a href="#guardian-audit">Guardian consent</a>
-            <a href="#notifications">Notifications</a>
-            <a href="/change-password.html">Change password</a>
+
+            <a href="#overview" class="active">
+                Overview
+            </a>
+
+            <a href="#users">
+                Users
+            </a>
+
+            <a
+                id="administratorsNav"
+                href="#administrators"
+                hidden>
+                Administrators
+            </a>
+
+            <a href="#registrations">
+                Registrations
+            </a>
+
+            <a href="#teams">
+                Teams &amp; members
+            </a>
+
+            <a href="#payments">
+                Payments
+            </a>
+
+            <a href="#submissions">
+                Submissions
+            </a>
+
+            <a href="#guardian-audit">
+                Guardian consent
+            </a>
+
+            <a href="#notifications">
+                Notifications
+            </a>
+
+            <a href="/change-password.html">
+                Change password
+            </a>
 
             <button
                 id="adminLogout"
@@ -51,6 +99,7 @@
                 class="btn btn-ghost">
                 Logout
             </button>
+
         </nav>
 
     </aside>
@@ -76,11 +125,17 @@
                     Refresh all
                 </button>
 
-                <a class="btn btn-ghost" href="/">
+                <a
+                    class="btn btn-ghost"
+                    href="/">
                     Public website
                 </a>
 
-                <span id="refreshStatus" class="refresh-status" role="status" aria-live="polite">
+                <span
+                    id="refreshStatus"
+                    class="refresh-status"
+                    role="status"
+                    aria-live="polite">
                     Live data loaded
                 </span>
 
@@ -181,6 +236,7 @@
 
                 <table class="table">
                     <tbody>
+
                     <tr>
                         <td>Drafts</td>
                         <td data-metric="pocDrafts">0</td>
@@ -195,6 +251,7 @@
                         <td>Notifications pending</td>
                         <td data-metric="notificationsPending">0</td>
                     </tr>
+
                     </tbody>
                 </table>
 
@@ -202,12 +259,19 @@
 
         </div>
 
-        <section id="users" class="panel workflow-panel">
+        <!-- USERS -->
+
+        <section
+            id="users"
+            class="panel workflow-panel">
 
             <div class="section-line">
 
                 <div>
-                    <small class="eyebrow">ACCESS CONTROL</small>
+                    <small class="eyebrow">
+                        ACCESS CONTROL
+                    </small>
+
                     <h3>Users</h3>
                 </div>
 
@@ -247,7 +311,9 @@
 
                     <tbody id="userRows">
                     <tr>
-                        <td colspan="7">Loading…</td>
+                        <td colspan="7">
+                            Loading users…
+                        </td>
                     </tr>
                     </tbody>
 
@@ -257,7 +323,81 @@
 
         </section>
 
-        <section id="registrations" class="panel workflow-panel">
+        <!-- ADMINISTRATORS: ONLY SUPER ADMIN CAN SEE -->
+
+        <section
+            id="administrators"
+            class="panel workflow-panel"
+            hidden>
+
+            <div class="section-line">
+
+                <div>
+                    <small class="eyebrow">
+                        SUPER ADMIN CONTROL
+                    </small>
+
+                    <h3>Administrators</h3>
+
+                    <p class="auth-note">
+                        View administrator accounts and control admin
+                        access. Super Administrator accounts are protected.
+                    </p>
+                </div>
+
+                <div class="admin-actions">
+
+                    <input
+                        class="table-search"
+                        data-filter="administratorRows"
+                        placeholder="Search administrators">
+
+                    <button
+                        id="addAdministrator"
+                        type="button"
+                        class="btn btn-primary">
+                        Add administrator
+                    </button>
+
+                </div>
+
+            </div>
+
+            <div class="table-wrap">
+
+                <table class="table">
+
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name / email</th>
+                        <th>Role</th>
+                        <th>Email verified</th>
+                        <th>Access</th>
+                        <th>Created</th>
+                        <th>Action</th>
+                    </tr>
+                    </thead>
+
+                    <tbody id="administratorRows">
+                    <tr>
+                        <td colspan="7">
+                            Loading administrators…
+                        </td>
+                    </tr>
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+        <!-- REGISTRATIONS -->
+
+        <section
+            id="registrations"
+            class="panel workflow-panel">
 
             <div class="section-line">
 
@@ -297,7 +437,9 @@
 
                     <tbody id="registrationRows">
                     <tr>
-                        <td colspan="10">Loading…</td>
+                        <td colspan="10">
+                            Loading registrations…
+                        </td>
                     </tr>
                     </tbody>
 
@@ -307,7 +449,11 @@
 
         </section>
 
-        <section id="teams" class="panel workflow-panel">
+        <!-- TEAMS -->
+
+        <section
+            id="teams"
+            class="panel workflow-panel">
 
             <div class="section-line">
 
@@ -346,7 +492,9 @@
 
                     <tbody id="teamRows">
                     <tr>
-                        <td colspan="9">Loading…</td>
+                        <td colspan="9">
+                            Loading teams…
+                        </td>
                     </tr>
                     </tbody>
 
@@ -356,7 +504,11 @@
 
         </section>
 
-        <section id="payments" class="panel workflow-panel">
+        <!-- PAYMENTS -->
+
+        <section
+            id="payments"
+            class="panel workflow-panel">
 
             <div class="section-line">
 
@@ -393,7 +545,9 @@
 
                     <tbody id="paymentRows">
                     <tr>
-                        <td colspan="7">Loading…</td>
+                        <td colspan="7">
+                            Loading payments…
+                        </td>
                     </tr>
                     </tbody>
 
@@ -403,7 +557,11 @@
 
         </section>
 
-        <section id="submissions" class="panel workflow-panel">
+        <!-- SUBMISSIONS -->
+
+        <section
+            id="submissions"
+            class="panel workflow-panel">
 
             <div class="section-line">
 
@@ -442,7 +600,9 @@
 
                     <tbody id="submissionRows">
                     <tr>
-                        <td colspan="9">Loading…</td>
+                        <td colspan="9">
+                            Loading submissions…
+                        </td>
                     </tr>
                     </tbody>
 
@@ -451,6 +611,8 @@
             </div>
 
         </section>
+
+        <!-- GUARDIAN CONSENT -->
 
         <section
             id="guardian-audit"
@@ -492,7 +654,9 @@
 
                     <tbody id="guardianRows">
                     <tr>
-                        <td colspan="8">Loading…</td>
+                        <td colspan="8">
+                            Loading guardian records…
+                        </td>
                     </tr>
                     </tbody>
 
@@ -502,7 +666,11 @@
 
         </section>
 
-        <section id="notifications" class="panel workflow-panel">
+        <!-- NOTIFICATIONS -->
+
+        <section
+            id="notifications"
+            class="panel workflow-panel">
 
             <div class="section-line">
 
@@ -542,7 +710,9 @@
 
                     <tbody id="notificationRows">
                     <tr>
-                        <td colspan="10">Loading…</td>
+                        <td colspan="10">
+                            Loading notifications…
+                        </td>
                     </tr>
                     </tbody>
 
@@ -556,11 +726,86 @@
 
 </div>
 
-<dialog id="userDialog" class="admin-dialog">
+<!-- ADD ADMINISTRATOR DIALOG -->
 
-    <form id="userForm" class="auth-form">
+<dialog
+    id="administratorDialog"
+    class="admin-dialog">
 
-        <input id="userId" type="hidden">
+    <form
+        id="administratorForm"
+        class="auth-form">
+
+        <div class="section-line">
+
+            <div>
+                <small class="eyebrow">
+                    SUPER ADMIN CONTROL
+                </small>
+
+                <h3>Add administrator</h3>
+            </div>
+
+            <button
+                type="button"
+                id="cancelAdministrator"
+                class="btn btn-ghost">
+                Close
+            </button>
+
+        </div>
+
+        <p class="auth-note">
+            Enter the email address of an existing registered MiTRAA user.
+            The account will receive Administrator access.
+        </p>
+
+        <div class="field">
+
+            <label for="administratorEmail">
+                Registered user email
+            </label>
+
+            <input
+                id="administratorEmail"
+                name="email"
+                type="email"
+                required
+                maxlength="190"
+                autocomplete="email"
+                placeholder="user@example.com">
+
+        </div>
+
+        <button
+            class="btn btn-primary"
+            type="submit">
+            Grant administrator access
+        </button>
+
+        <p
+            id="administratorFormStatus"
+            class="form-status"
+            aria-live="polite">
+        </p>
+
+    </form>
+
+</dialog>
+
+<!-- ADD / EDIT USER DIALOG -->
+
+<dialog
+    id="userDialog"
+    class="admin-dialog">
+
+    <form
+        id="userForm"
+        class="auth-form">
+
+        <input
+            id="userId"
+            type="hidden">
 
         <div class="section-line">
 
@@ -578,22 +823,30 @@
         <div class="split">
 
             <div class="field">
-                <label for="userName">Full name</label>
+
+                <label for="userName">
+                    Full name
+                </label>
 
                 <input
                     id="userName"
                     required
                     maxlength="120">
+
             </div>
 
             <div class="field">
-                <label for="userEmail">Email</label>
+
+                <label for="userEmail">
+                    Email
+                </label>
 
                 <input
                     id="userEmail"
                     type="email"
                     required
                     maxlength="190">
+
             </div>
 
         </div>
@@ -601,9 +854,13 @@
         <div class="split">
 
             <div class="field">
-                <label for="userRole">Role</label>
+
+                <label for="userRole">
+                    Role
+                </label>
 
                 <select id="userRole">
+
                     <option value="PARTICIPANT">
                         PARTICIPANT
                     </option>
@@ -615,10 +872,13 @@
                     <option value="SUPER_ADMIN">
                         SUPER_ADMIN
                     </option>
+
                 </select>
+
             </div>
 
             <div class="field">
+
                 <label for="userPassword">
                     Password / new password
                 </label>
@@ -626,35 +886,48 @@
                 <input
                     id="userPassword"
                     type="password"
-                    minlength="10"
-                    maxlength="72"
+                    minlength="8"
+                    maxlength="12"
+                    autocomplete="new-password"
                     placeholder="Required for new user">
+
             </div>
 
         </div>
 
         <label>
-            <input id="userEnabled" type="checkbox">
+            <input
+                id="userEnabled"
+                type="checkbox">
             Account enabled
         </label>
 
         <label>
-            <input id="userVerified" type="checkbox">
+            <input
+                id="userVerified"
+                type="checkbox">
             Email verified
         </label>
 
-        <button class="btn btn-primary" type="submit">
+        <button
+            class="btn btn-primary"
+            type="submit">
             Save user
         </button>
 
-        <p id="userFormStatus" class="form-status"></p>
+        <p
+            id="userFormStatus"
+            class="form-status"
+            aria-live="polite">
+        </p>
 
     </form>
 
 </dialog>
 
 <script src="security-api.js"></script>
-<script src="admin.js?v=20260828-2"></script>
+<script src="admin.js?v=20260902-3"></script>
+<script src="quality.js" defer></script>
 
-<script src="quality.js" defer></script></body>
+</body>
 </html>
