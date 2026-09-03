@@ -1,3 +1,4 @@
+
 <!doctype html>
 <html lang="en">
 
@@ -17,9 +18,9 @@
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="enhancements.css">
     <link rel="stylesheet" href="account.css">
-    <link rel="stylesheet" href="admin.css?v=20260902-3">
+    <link rel="stylesheet" href="admin.css?v=20260903-5">
     <link rel="stylesheet" href="responsive.css">
-    <link rel="stylesheet" href="quality.css">
+    <link rel="stylesheet" href="quality.css?v=20260903-2">
 </head>
 
 <body data-admin-dashboard="true">
@@ -28,15 +29,12 @@
 
     <aside class="sidebar admin-sidebar">
 
-        <a class="brand" href="/">
+        <a class="dashboard-brand" href="/" aria-label="MiTRAA Hackathons 2026 home">
             <img
-                src="assets/company-logo.svg"
-                alt="MiTRAA">
-
-            <span>
-                <b>MiTRAA</b>
-                <small>COMMAND CENTER</small>
-            </span>
+                class="dashboard-lockup-image"
+                src="assets/brand-lockup.png"
+                alt="MiTRAA Hackathons 2026">
+            <span class="dashboard-portal-label">Admin Command Center</span>
         </a>
 
         <nav class="side-nav">
@@ -142,11 +140,6 @@
             </div>
 
         </div>
-
-        <p class="auth-note">
-            Live MySQL-backed operations. Passwords, OTP hashes and
-            gateway secrets are never displayed.
-        </p>
 
         <div class="admin-kpis">
 
@@ -275,7 +268,7 @@
                     <h3>Users</h3>
                 </div>
 
-                <div class="admin-actions">
+                <div class="admin-actions user-toolbar">
 
                     <input
                         class="table-search"
@@ -289,6 +282,13 @@
                         Add user
                     </button>
 
+                    <button
+                        id="downloadUsersExcel"
+                        type="button"
+                        class="btn btn-ghost">
+                        Download Excel
+                    </button>
+
                 </div>
 
             </div>
@@ -299,7 +299,7 @@
 
                     <thead>
                     <tr>
-                        <th>ID</th>
+                        <th>S.No.</th>
                         <th>Name / email</th>
                         <th>Role</th>
                         <th>Email verified</th>
@@ -369,7 +369,7 @@
 
                     <thead>
                     <tr>
-                        <th>ID</th>
+                        <th>S.No.</th>
                         <th>Name / email</th>
                         <th>Role</th>
                         <th>Email verified</th>
@@ -409,10 +409,10 @@
                     <h3>Registrations</h3>
                 </div>
 
-                <input
-                    class="table-search"
-                    data-filter="registrationRows"
-                    placeholder="Search registrations">
+                <div class="admin-actions audit-toolbar">
+                    <input class="table-search" data-filter="registrationRows" placeholder="Search registrations">
+                    <button type="button" class="btn btn-ghost" data-excel-export="registrations">Download Excel</button>
+                </div>
 
             </div>
 
@@ -465,10 +465,10 @@
                     <h3>Teams and members</h3>
                 </div>
 
-                <input
-                    class="table-search"
-                    data-filter="teamRows"
-                    placeholder="Search teams or members">
+                <div class="admin-actions audit-toolbar">
+                    <input class="table-search" data-filter="teamRows" placeholder="Search teams or members">
+                    <button type="button" class="btn btn-ghost" data-excel-export="teams">Download Excel</button>
+                </div>
 
             </div>
 
@@ -520,10 +520,10 @@
                     <h3>Payments</h3>
                 </div>
 
-                <input
-                    class="table-search"
-                    data-filter="paymentRows"
-                    placeholder="Search payments">
+                <div class="admin-actions audit-toolbar">
+                    <input class="table-search" data-filter="paymentRows" placeholder="Search payments">
+                    <button type="button" class="btn btn-ghost" data-excel-export="payments">Download Excel</button>
+                </div>
 
             </div>
 
@@ -573,10 +573,10 @@
                     <h3>Submissions</h3>
                 </div>
 
-                <input
-                    class="table-search"
-                    data-filter="submissionRows"
-                    placeholder="Search submissions">
+                <div class="admin-actions audit-toolbar">
+                    <input class="table-search" data-filter="submissionRows" placeholder="Search submissions">
+                    <button type="button" class="btn btn-ghost" data-excel-export="submissions">Download Excel</button>
+                </div>
 
             </div>
 
@@ -628,10 +628,10 @@
                     <h3>Guardian consent audit</h3>
                 </div>
 
-                <input
-                    class="table-search"
-                    data-filter="guardianRows"
-                    placeholder="Search consent records">
+                <div class="admin-actions audit-toolbar">
+                    <input class="table-search" data-filter="guardianRows" placeholder="Search consent records">
+                    <button type="button" class="btn btn-ghost" data-excel-export="guardian-consents">Download Excel</button>
+                </div>
 
             </div>
 
@@ -682,10 +682,10 @@
                     <h3>Notifications</h3>
                 </div>
 
-                <input
-                    class="table-search"
-                    data-filter="notificationRows"
-                    placeholder="Search notifications">
+                <div class="admin-actions audit-toolbar">
+                    <input class="table-search" data-filter="notificationRows" placeholder="Search notifications">
+                    <button type="button" class="btn btn-ghost" data-excel-export="notifications">Download Excel</button>
+                </div>
 
             </div>
 
@@ -695,7 +695,7 @@
 
                     <thead>
                     <tr>
-                        <th>ID</th>
+                        <th>S.No.</th>
                         <th>Channel</th>
                         <th>Recipient</th>
                         <th>Event</th>
@@ -926,7 +926,7 @@
 </dialog>
 
 <script src="security-api.js"></script>
-<script src="admin.js?v=20260902-3"></script>
+<script src="admin.js?v=20260903-5"></script>
 <script src="quality.js" defer></script>
 
 </body>

@@ -49,6 +49,49 @@
     flex-wrap: wrap;
 }
 
+.user-toolbar {
+    flex-wrap: nowrap;
+    justify-content: flex-end;
+}
+
+.user-toolbar .table-search {
+    width: min(300px, 32vw);
+}
+
+.audit-toolbar {
+    flex-wrap: nowrap;
+    justify-content: flex-end;
+}
+
+.audit-toolbar .table-search {
+    width: min(280px, 30vw);
+}
+
+.user-row-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    white-space: nowrap;
+}
+
+.btn-enable {
+    color: #7cf2bd;
+    border-color: #38d98b66;
+    background: #38d98b12;
+}
+
+.btn-delete {
+    color: #ffffff;
+    border-color: #ff355f;
+    background: #b71835;
+}
+
+.protected-label {
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 800;
+}
+
 .refresh-status {
     flex-basis: 100%;
     color: var(--muted);
@@ -247,6 +290,28 @@
 
     .admin-actions {
         margin-top: 12px;
+    }
+
+    .user-toolbar {
+        flex-wrap: wrap;
+        width: 100%;
+        justify-content: flex-start;
+    }
+
+    .user-toolbar .table-search {
+        width: 100%;
+        flex-basis: 100%;
+    }
+
+    .audit-toolbar {
+        flex-wrap: wrap;
+        width: 100%;
+        justify-content: flex-start;
+    }
+
+    .audit-toolbar .table-search {
+        width: 100%;
+        flex-basis: 100%;
     }
 
     .money-grid {

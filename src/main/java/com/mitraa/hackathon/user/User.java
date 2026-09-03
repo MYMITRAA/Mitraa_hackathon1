@@ -1,4 +1,5 @@
 package com.mitraa.hackathon.user;
+import com.mitraa.hackathon.common.InputNormalizer;
 
 import jakarta.persistence.*;
 import java.time.Instant;
@@ -16,7 +17,7 @@ public class User {
     @Column(nullable=false) private boolean enabled = true;
     private Instant emailVerifiedAt;
     @Column(nullable=false, updatable=false) private Instant createdAt = Instant.now();
-    public Long getId(){return id;} public String getFullName(){return fullName;} public void setFullName(String v){fullName=v;}
+    public Long getId(){return id;} public String getFullName(){return fullName;} public void setFullName(String v){fullName=InputNormalizer.capitalizeFirstCharacter(v);}
     public String getEmail(){return email;} public void setEmail(String v){email=v;} public String getPasswordHash(){return passwordHash;} public void setPasswordHash(String v){passwordHash=v;}
     public String getPendingEmail(){return pendingEmail;} public void setPendingEmail(String v){pendingEmail=v;}
     public Instant getPendingEmailRequestedAt(){return pendingEmailRequestedAt;} public void setPendingEmailRequestedAt(Instant v){pendingEmailRequestedAt=v;}

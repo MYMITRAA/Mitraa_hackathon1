@@ -1,5 +1,7 @@
 package com.mitraa.hackathon.user;
 
+import com.mitraa.hackathon.common.InputNormalizer;
+
 import com.mitraa.hackathon.auth.AccountCode;
 import com.mitraa.hackathon.auth.AccountCodeRepository;
 import com.mitraa.hackathon.notification.NotificationService;
@@ -53,9 +55,9 @@ public class ProfileService {
         Registration registration = registrations.findByUser(user)
                 .orElseThrow(() -> new IllegalArgumentException("Registration was not found for this account."));
 
-        String fullName = request.fullName().trim();
+        String fullName = InputNormalizer.capitalizeFirstCharacter(request.fullName());
         String requestedEmail = normalizeEmail(request.email());
-        String phone = normalizePhone(request.phone());
+        String phone = InputNormalizer.normalizePhone(request.phone(), registration.getCountry());
 
         user.setFullName(fullName);
         registration.setPhone(phone);
@@ -166,19 +168,12 @@ public class ProfileService {
         return email == null ? "" : email.trim().toLowerCase(Locale.ROOT);
     }
 
-    private String normalizePhone(String phone) {
-        String value = phone == null ? "" : phone.trim().replaceAll("[\\s()-]", "");
-        if (!value.matches("^\\+?[0-9]{6,15}$")) {
-            throw new IllegalArgumentException("Phone number must contain 6–15 digits and may start with +.");
-        }
-        return value;
-    }
-
     private ProfileView view(User user, Registration registration) {
         return new ProfileView(
                 user.getFullName(),
                 user.getEmail(),
                 registration == null ? "" : registration.getPhone(),
+                registration == null ? "" : registration.getCountry(),
                 user.getEmailVerifiedAt() != null,
                 user.getPendingEmail(),
                 user.getPendingEmail() != null && !user.getPendingEmail().isBlank()
@@ -189,6 +184,7 @@ public class ProfileService {
             String fullName,
             String email,
             String phone,
+            String country,
             boolean emailVerified,
             String pendingEmail,
             boolean emailVerificationPending) {

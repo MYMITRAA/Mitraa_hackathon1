@@ -71,6 +71,7 @@ let adminUsers = [];
 let adminLoadErrors = 0;
 let adminRefreshing = false;
 let currentAdminRole = "";
+let currentAdminEmail = "";
 
 function showError(id, columns, error) {
     adminLoadErrors += 1;
@@ -97,6 +98,7 @@ async function loadAdminContext() {
     const account = await api("/api/auth/me");
 
     currentAdminRole = account.role || "";
+    currentAdminEmail = account.email || "";
 
     const isSuperAdmin =
         currentAdminRole === "SUPER_ADMIN";
@@ -139,9 +141,17 @@ async function loadUsers() {
         }
 
         tableBody.innerHTML = adminUsers.length
-            ? adminUsers.map(user => `
+            ? adminUsers.map((user, index) => {
+                const isSelf = String(user.email).toLowerCase()
+                    === String(currentAdminEmail).toLowerCase();
+                const protectedSuperAdmin = user.role === "SUPER_ADMIN";
+                const canManage = !protectedSuperAdmin
+                    && (currentAdminRole === "SUPER_ADMIN"
+                        || user.role === "PARTICIPANT");
+
+                return `
                 <tr>
-                    <td>${user.id}</td>
+                    <td>${index + 1}</td>
 
                     <td>
                         ${esc(user.fullName)}
@@ -168,23 +178,32 @@ async function loadUsers() {
 
                     <td>${when(user.createdAt)}</td>
 
-                    <td>
-                        <button
+                    <td class="user-row-actions">
+                        ${canManage ? `<button
                             type="button"
                             class="btn btn-ghost"
                             data-edit-user="${user.id}">
                             Edit
+                        </button>` : ""}
+
+                        ${canManage && !isSelf ? `<button
+                            type="button"
+                            class="btn ${user.enabled ? "btn-danger" : "btn-enable"}"
+                            data-access-user="${user.id}"
+                            data-next-enabled="${!user.enabled}">
+                            ${user.enabled ? "Disable" : "Enable"}
                         </button>
 
                         <button
                             type="button"
-                            class="btn btn-danger"
-                            data-disable-user="${user.id}">
-                            Disable
-                        </button>
+                            class="btn btn-delete"
+                            data-delete-user="${user.id}">
+                            Delete
+                        </button>` : `<span class="protected-label">Protected</span>`}
                     </td>
                 </tr>
-            `).join("")
+            `;
+            }).join("")
             : empty(7);
 
     } catch (error) {
@@ -209,9 +228,9 @@ async function loadAdministrators() {
         }
 
         tableBody.innerHTML = administrators.length
-            ? administrators.map(administrator => `
+            ? administrators.map((administrator, index) => `
                 <tr>
-                    <td>${administrator.id}</td>
+                    <td>${index + 1}</td>
 
                     <td>
                         ${esc(administrator.fullName)}
@@ -718,9 +737,9 @@ async function loadNotifications() {
         }
 
         tableBody.innerHTML = rows.length
-            ? rows.map(notification => `
+            ? rows.map((notification, index) => `
                 <tr>
-                    <td>${notification.id}</td>
+                    <td>${index + 1}</td>
 
                     <td>
                         ${esc(notification.channel)}
@@ -1069,15 +1088,19 @@ byId("userRows")?.addEventListener(
             "[data-edit-user]"
         );
 
-        const disableButton = event.target.closest(
-            "[data-disable-user]"
+        const accessButton = event.target.closest(
+            "[data-access-user]"
+        );
+
+        const deleteButton = event.target.closest(
+            "[data-delete-user]"
         );
 
         const editId =
             editButton?.dataset.editUser;
 
-        const disableId =
-            disableButton?.dataset.disableUser;
+        const accessId = accessButton?.dataset.accessUser;
+        const deleteId = deleteButton?.dataset.deleteUser;
 
         if (editId) {
             const user = adminUsers.find(
@@ -1116,19 +1139,20 @@ byId("userRows")?.addEventListener(
             byId("userDialog")?.showModal();
         }
 
-        if (
-            disableId
-            && confirm(
-                "Disable this user? Their "
-                + "registration, payment and "
-                + "audit records will be retained."
-            )
-        ) {
+        if (accessId) {
+            const nextEnabled = accessButton.dataset.nextEnabled === "true";
+            const action = nextEnabled ? "enable" : "disable";
+
+            if (!confirm(`${action[0].toUpperCase() + action.slice(1)} this user?`)) {
+                return;
+            }
+
             try {
                 await api(
-                    `/api/admin/users/${disableId}`,
+                    `/api/admin/users/${accessId}/access`,
                     {
-                        method: "DELETE"
+                        method: "PATCH",
+                        body: JSON.stringify({ enabled: nextEnabled })
                     }
                 );
 
@@ -1145,8 +1169,84 @@ byId("userRows")?.addEventListener(
                 alert(error.message);
             }
         }
+
+        if (deleteId) {
+            const user = adminUsers.find(item => String(item.id) === String(deleteId));
+            const confirmation = prompt(
+                `Permanently delete ${user?.fullName || "this user"} and all linked data? This cannot be undone. Type DELETE to continue.`
+            );
+
+            if (confirmation !== "DELETE") {
+                return;
+            }
+
+            try {
+                await api(`/api/admin/users/${deleteId}`, { method: "DELETE" });
+                await loadUsers();
+                await loadMetrics();
+
+                if (currentAdminRole === "SUPER_ADMIN") {
+                    await loadAdministrators();
+                }
+            } catch (error) {
+                alert(error.message);
+            }
+        }
     }
 );
+
+async function downloadAdminExcel(button, resource, fallbackName) {
+    const originalText = button.textContent;
+
+    try {
+        button.disabled = true;
+        button.textContent = "Preparing…";
+
+        const response = await fetch(`/api/admin/${resource}/export`, {
+            credentials: "same-origin"
+        });
+
+        if (!response.ok) {
+            let message = `Download failed (${response.status}).`;
+            try {
+                const error = await response.json();
+                message = error.message || message;
+            } catch (_) {
+                // Keep the HTTP status message.
+            }
+            throw new Error(message);
+        }
+
+        const blob = await response.blob();
+        const disposition = response.headers.get("Content-Disposition") || "";
+        const match = disposition.match(/filename="?([^";]+)"?/i);
+        const filename = match?.[1] || fallbackName;
+        const url = URL.createObjectURL(blob);
+        const anchor = document.createElement("a");
+        anchor.href = url;
+        anchor.download = filename;
+        document.body.appendChild(anchor);
+        anchor.click();
+        anchor.remove();
+        URL.revokeObjectURL(url);
+    } catch (error) {
+        alert(error.message);
+    } finally {
+        button.disabled = false;
+        button.textContent = originalText;
+    }
+}
+
+byId("downloadUsersExcel")?.addEventListener("click", event => {
+    downloadAdminExcel(event.currentTarget, "users", "mitraa-all-users.xlsx");
+});
+
+document.querySelectorAll("[data-excel-export]").forEach(button => {
+    button.addEventListener("click", event => {
+        const resource = event.currentTarget.dataset.excelExport;
+        downloadAdminExcel(event.currentTarget, resource, `mitraa-${resource}.xlsx`);
+    });
+});
 
 byId("userForm")?.addEventListener(
     "submit",

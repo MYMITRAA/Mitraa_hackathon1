@@ -48,6 +48,14 @@
       return;
     }
 
+    if (newPassword !== newPassword.trim()
+        || confirmPassword !== confirmPassword.trim()) {
+      status.textContent =
+        "Password must not start or end with a space.";
+      status.classList.add("error");
+      return;
+    }
+
     if (oldPassword === newPassword) {
       status.textContent =
         "New password must be different from the current password.";

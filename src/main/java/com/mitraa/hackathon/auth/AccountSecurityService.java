@@ -1,5 +1,7 @@
 package com.mitraa.hackathon.auth;
 
+import com.mitraa.hackathon.common.InputNormalizer;
+
 import com.mitraa.hackathon.notification.NotificationService;
 import com.mitraa.hackathon.user.User;
 import com.mitraa.hackathon.user.UserRepository;
@@ -165,6 +167,8 @@ public class AccountSecurityService {
                     "Password must contain 8–12 characters."
             );
         }
+
+        InputNormalizer.requireNoOuterPasswordWhitespace(password);
 
         String normalizedEmail = normalize(email);
 

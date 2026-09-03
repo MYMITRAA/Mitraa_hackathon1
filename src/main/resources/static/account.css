@@ -136,6 +136,137 @@
     filter: blur(12px);
 }
 
+/* Unified branding and layout for profile and account-security pages. */
+.auth-brand-panel .account-logo-link {
+    position: relative;
+    z-index: 1;
+    display: block;
+    width: min(100%, 350px);
+    margin: 0 0 54px;
+    line-height: 0;
+    text-decoration: none;
+}
+
+.auth-brand-panel .account-page-logo {
+    display: block;
+    width: 100%;
+    height: auto;
+    max-width: 100%;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    object-fit: contain;
+    object-position: left center;
+    mix-blend-mode: screen;
+}
+
+.change-password-shell {
+    width: min(1050px, 100%);
+    grid-template-columns: .9fr 1.1fr;
+    border-color: #768bc547;
+    background: #060912f5;
+}
+
+.change-password-shell .auth-brand-panel {
+    padding: 54px 48px;
+    background: radial-gradient(circle at 18% 10%, #7b2cff66, transparent 34%),
+                radial-gradient(circle at 100% 100%, #18e2f22b, transparent 38%),
+                #0c1020;
+}
+
+.change-password-shell .auth-brand-panel h1 {
+    margin: 0 0 22px;
+    font-size: clamp(40px, 4vw, 56px);
+    line-height: 1.08;
+    letter-spacing: -.04em;
+}
+
+.change-password-shell .auth-brand-panel > p {
+    max-width: 390px;
+    color: #aeb9d5;
+    line-height: 1.75;
+}
+
+.change-password-main {
+    padding: 42px 52px 52px;
+}
+
+.account-page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid #7c91c92e;
+}
+
+.account-page-header .back-link {
+    color: #b5c0dc;
+    text-decoration: none;
+}
+
+.account-page-header .back-link:hover {
+    color: #fff;
+}
+
+.account-security-mark {
+    color: #4de6a0;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: .04em;
+}
+
+.password-heading {
+    margin: 32px 0 22px;
+}
+
+.password-heading h2 {
+    font-size: 32px;
+    letter-spacing: -.025em;
+}
+
+.password-form-card {
+    gap: 17px;
+    padding: 26px;
+    border: 1px solid #728ac647;
+    border-radius: 22px;
+    background: linear-gradient(145deg, #11172bf0, #080b16fa);
+    box-shadow: 0 20px 60px #00000038;
+}
+
+.password-form-card .password-control {
+    min-height: 54px;
+    transition: border-color .2s, box-shadow .2s;
+}
+
+.password-form-card .password-control:focus-within {
+    border-color: #27ddea;
+    box-shadow: 0 0 0 3px #27ddea1a;
+}
+
+@media (max-width: 980px) {
+    .change-password-shell {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 640px) {
+    .change-password-main {
+        padding: 24px 18px 38px;
+    }
+
+    .account-security-mark {
+        display: none;
+    }
+
+    .password-form-card {
+        padding: 20px;
+    }
+}
+
 .auth-heading {
     margin: 24px 0;
 }

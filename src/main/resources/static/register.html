@@ -1,4 +1,5 @@
 
+
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Register for MiTRAA Hackathons 2026. India-first pricing with global participation."><title>Create Player ID | MiTRAA Hackathons 2026</title><link rel="stylesheet" href="styles.css"><link rel="stylesheet" href="account.css"><link rel="stylesheet" href="responsive.css"><link rel="stylesheet" href="quality.css"></head>
 <body class="auth-page"><div class="auth-shell auth-shell-premium registration-shell"><aside class="auth-aside auth-brand-panel"><img src="assets/hackathon-logo.jpg" alt="MiTRAA Hackathons"><span class="india-badge">INDIA-FIRST • OPEN TO THE WORLD</span><h1>Build in India.<br>Impact the world.</h1><p>Indian students and young builders are central to this mission, with accessible local pricing and the same global arena, jury and rewards.</p><div class="pricing-showcase"><div class="price-market active" data-market-card="india"><b>India entry</b><span><strong>₹14.01</strong> Individual</span><span><strong>₹19.93</strong> Team • minimum 3</span><small>Payment in INR</small></div><div class="price-market" data-market-card="global"><b>International entry</b><span><strong>$2.70</strong> Individual</span><span><strong>$5.80</strong> Team • minimum 3</span><small>Payment in USD</small></div></div></aside>
 <main class="auth-main"><a href="/" class="auth-note">← Back to mission control</a><h2>Create your Player ID</h2><p class="auth-note">India is selected by default. Your international dialing code is added automatically.</p>
@@ -19,7 +20,12 @@
   function syncCountry() {
     const option = country.options[country.selectedIndex];
     dialCode.textContent = option ? option.dataset.code : "+91";
-    phone.placeholder = option && option.dataset.iso === "in" ? "9938330784" : "Enter mobile number";
+    const indiaSelected = option && option.dataset.iso === "in";
+    phone.placeholder = indiaSelected ? "9938330784" : "Enter mobile number";
+    phone.maxLength = indiaSelected ? 10 : 15;
+    phone.pattern = indiaSelected ? "[0-9]{6,10}" : "[0-9]{6,15}";
+    phone.value = phone.value.replace(/\D/g, "").slice(0, indiaSelected ? 10 : 15);
+    phone.setCustomValidity("");
   }
 
   phone.disabled = false;
@@ -30,7 +36,8 @@
     if (!/^\d$/.test(event.key)) event.preventDefault();
   });
   phone.addEventListener("input", () => {
-    phone.value = phone.value.replace(/\D/g, "").slice(0, 15);
+    const indiaSelected = country.options[country.selectedIndex]?.dataset.iso === "in";
+    phone.value = phone.value.replace(/\D/g, "").slice(0, indiaSelected ? 10 : 15);
     phone.setCustomValidity(phone.value.length > 0 && phone.value.length < 6
       ? "Mobile number must contain at least 6 digits."
       : "");
@@ -38,7 +45,8 @@
   phone.addEventListener("paste", event => {
     event.preventDefault();
     const pasted = (event.clipboardData || window.clipboardData).getData("text");
-    phone.value = pasted.replace(/\D/g, "").slice(0, 15);
+    const indiaSelected = country.options[country.selectedIndex]?.dataset.iso === "in";
+    phone.value = pasted.replace(/\D/g, "").slice(0, indiaSelected ? 10 : 15);
     phone.dispatchEvent(new Event("input", { bubbles: true }));
   });
   country.addEventListener("change", syncCountry);

@@ -7,6 +7,7 @@
   const nameInput = document.getElementById("profileName");
   const emailInput = document.getElementById("profileEmail");
   const phoneInput = document.getElementById("profilePhone");
+  const phoneHelp = document.getElementById("profilePhoneHelp");
   const emailBadge = document.getElementById("emailBadge");
   const emailHelp = document.getElementById("emailHelp");
   const profileStatus = document.getElementById("profileStatus");
@@ -16,6 +17,27 @@
   const otpStatus = document.getElementById("otpStatus");
   const verifyButton = document.getElementById("verifyProfileEmail");
   const resendButton = document.getElementById("resendProfileOtp");
+  const saveButton = form.querySelector("button[type='submit']");
+  let savedProfileState = "";
+
+  function profilePayload() {
+    return {
+      fullName: nameInput.value.trim(),
+      email: emailInput.value.trim().toLowerCase(),
+      phone: phoneInput.value.trim()
+    };
+  }
+
+  function profileState() {
+    return JSON.stringify(profilePayload());
+  }
+
+  function syncSaveButton() {
+    if (saveButton) {
+      saveButton.disabled = !savedProfileState
+        || profileState() === savedProfileState;
+    }
+  }
 
   function setStatus(element, message, error = false) {
     element.textContent = message || "";
@@ -23,10 +45,23 @@
     element.classList.toggle("success", !error && Boolean(message));
   }
 
+  function setNeutralStatus(element, message) {
+    element.textContent = message || "";
+    element.classList.remove("error", "success");
+  }
+
   function render(profile) {
     nameInput.value = profile.fullName || "";
     emailInput.value = profile.pendingEmail || profile.email || "";
     phoneInput.value = profile.phone || "";
+    phoneInput.dataset.country = profile.country || "";
+    const indiaProfile = (profile.country || "").trim().toLowerCase() === "india";
+    phoneInput.maxLength = indiaProfile ? 13 : 16;
+    if (phoneHelp) {
+      phoneHelp.textContent = indiaProfile
+        ? "+91 is fixed automatically. Enter a maximum of 10 mobile digits."
+        : "Use 6–15 digits. International + prefix is allowed.";
+    }
 
     if (profile.emailVerificationPending) {
       emailBadge.textContent = "Verification pending";
@@ -41,6 +76,9 @@
       pendingEmailText.textContent = "";
       verificationPanel.hidden = true;
     }
+
+    savedProfileState = profileState();
+    syncSaveButton();
   }
 
   function otpValue() {
@@ -63,7 +101,24 @@
   phoneInput.addEventListener("input", () => {
     let value = phoneInput.value.replace(/[^0-9+]/g, "");
     if (value.includes("+")) value = (value.startsWith("+") ? "+" : "") + value.replace(/\+/g, "");
-    phoneInput.value = value.slice(0, 16);
+    const india = (phoneInput.dataset.country || "").toLowerCase() === "india";
+    if (india) {
+      const digits = value.replace(/\D/g, "");
+      const national = value.startsWith("+91")
+        ? digits.slice(2)
+        : (digits.startsWith("91") && digits.length > 10 ? digits.slice(2) : digits);
+      phoneInput.value = `+91${national.slice(0, 10)}`;
+      phoneInput.setSelectionRange(phoneInput.value.length, phoneInput.value.length);
+    } else {
+      phoneInput.value = value.slice(0, 16);
+    }
+  });
+
+  form.addEventListener("input", () => {
+    syncSaveButton();
+    if (profileState() !== savedProfileState) {
+      setNeutralStatus(profileStatus, "You have unsaved changes.");
+    }
   });
 
   otpInputs.forEach((input, index) => {
@@ -90,19 +145,35 @@
 
   form.addEventListener("submit", async event => {
     event.preventDefault();
+
+    if (!savedProfileState || profileState() === savedProfileState) {
+      setNeutralStatus(profileStatus, "No profile changes to save.");
+      syncSaveButton();
+      return;
+    }
+
     setStatus(profileStatus, "Saving profile…");
+    if (saveButton) saveButton.disabled = true;
     try {
       const profile = await api("/api/profile", {
         method: "PUT",
-        body: JSON.stringify({fullName: nameInput.value.trim(), email: emailInput.value.trim(), phone: phoneInput.value.trim()})
+        body: JSON.stringify(profilePayload())
       });
       render(profile);
       setStatus(profileStatus, profile.emailVerificationPending
         ? "Name and phone saved. Verify the OTP sent to your new email."
-        : "Profile updated successfully.");
-      if (profile.emailVerificationPending) otpInputs[0]?.focus();
+        : "Profile updated successfully. Redirecting to dashboard…");
+
+      if (profile.emailVerificationPending) {
+        otpInputs[0]?.focus();
+      } else {
+        setTimeout(() => {
+          window.location.replace("/dashboard.html");
+        }, 1000);
+      }
     } catch (error) {
       setStatus(profileStatus, error.message, true);
+      syncSaveButton();
     }
   });
 

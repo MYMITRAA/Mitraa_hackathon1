@@ -1,4 +1,5 @@
 
+
 <!doctype html>
 <html lang="en">
 <head>
@@ -7,16 +8,17 @@
   <meta name="robots" content="noindex,nofollow">
   <title>Update Profile | MiTRAA</title>
   <link rel="stylesheet" href="/styles.css">
-  <link rel="stylesheet" href="/account.css">
-  <link rel="stylesheet" href="/profile.css">
+  <link rel="stylesheet" href="/account.css?v=20260903-4">
+  <link rel="stylesheet" href="/profile.css?v=20260903-4">
   <link rel="stylesheet" href="/responsive.css">
   <link rel="stylesheet" href="/quality.css">
 </head>
 <body class="auth-page profile-page">
 <div class="auth-shell auth-shell-premium profile-shell">
   <aside class="auth-aside auth-brand-panel profile-aside">
-    <img src="/assets/mitraa-white-logo.png" alt="MiTRAA">
-    <span class="india-badge">PLAYER PROFILE</span>
+    <a class="account-logo-link" href="/index.html" aria-label="MiTRAA Hackathons 2026 home">
+      <img class="account-page-logo" src="/assets/brand-lockup.png?v=20260903-3" alt="MiTRAA Hackathons 2026">
+    </a>
     <h1>Keep your<br>identity current.</h1>
     <p>Update your name and mobile number instantly. A changed email becomes active only after secure OTP verification.</p>
     <ul class="trust-list">
@@ -52,7 +54,7 @@
       <div class="field">
         <label for="profilePhone">Phone number</label>
         <input id="profilePhone" name="phone" type="tel" required maxlength="16" inputmode="tel" autocomplete="tel" placeholder="+919938330784">
-        <small class="auth-note">Use 6–15 digits. International + prefix is allowed.</small>
+        <small id="profilePhoneHelp" class="auth-note">Use 6–15 digits. International + prefix is allowed.</small>
       </div>
       <button class="btn btn-primary btn-lg profile-save-button" type="submit"><span>Save profile changes</span><span aria-hidden="true">→</span></button>
       <p id="profileStatus" class="form-status" aria-live="polite"></p>

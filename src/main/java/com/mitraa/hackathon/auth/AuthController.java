@@ -1,5 +1,6 @@
 package com.mitraa.hackathon.auth;
 
+import com.mitraa.hackathon.common.InputNormalizer;
 import com.mitraa.hackathon.registration.Registration;
 import com.mitraa.hackathon.registration.RegistrationRepository;
 import com.mitraa.hackathon.user.UserRepository;
@@ -36,7 +37,7 @@ public class AuthController {
    if(authentication==null) return ResponseEntity.status(401).build();
    var u=users.findByEmailIgnoreCase(authentication.getName()).orElseThrow();
    var reg=registrations.findByUser(u).orElse(null);
-   Map<String,Object> result=new java.util.LinkedHashMap<>();result.put("name",u.getFullName());result.put("email",u.getEmail());result.put("emailVerified",u.getEmailVerifiedAt()!=null);result.put("phone",reg==null?"":reg.getPhone());result.put("role",u.getRole().name());result.put("registrationId",reg==null?"":reg.getRegistrationCode());result.put("registrationStatus",reg==null?"":reg.getStatus().name());result.put("verificationStatus",reg==null?"":reg.getAgeVerificationStatus());result.put("guardianRequired",reg!=null&&reg.isGuardianConsentRequired());result.put("guardianReceived",reg!=null&&reg.isGuardianConsentReceived());result.put("guardianEmailMasked",reg==null?"":mask(reg.getGuardianEmail()));result.put("domain",reg==null?"":reg.getDomain());result.put("country",reg==null?"":reg.getCountry());result.put("participationType",reg==null?"":reg.getParticipationType().name());return ResponseEntity.ok(result);
+   Map<String,Object> result=new java.util.LinkedHashMap<>();result.put("name",InputNormalizer.capitalizeFirstCharacter(u.getFullName()));result.put("email",u.getEmail());result.put("emailVerified",u.getEmailVerifiedAt()!=null);result.put("phone",reg==null?"":reg.getPhone());result.put("role",u.getRole().name());result.put("registrationId",reg==null?"":reg.getRegistrationCode());result.put("registrationStatus",reg==null?"":reg.getStatus().name());result.put("verificationStatus",reg==null?"":reg.getAgeVerificationStatus());result.put("guardianRequired",reg!=null&&reg.isGuardianConsentRequired());result.put("guardianReceived",reg!=null&&reg.isGuardianConsentReceived());result.put("guardianEmailMasked",reg==null?"":mask(reg.getGuardianEmail()));result.put("domain",reg==null?"":reg.getDomain());result.put("country",reg==null?"":reg.getCountry());result.put("participationType",reg==null?"":reg.getParticipationType().name());return ResponseEntity.ok(result);
  }
  private String mask(String email){if(email==null||!email.contains("@"))return "";int at=email.indexOf('@');return email.substring(0,Math.min(2,at))+"***"+email.substring(at);}
  @GetMapping("/csrf") public Map<String,String> csrf(CsrfToken token){return Map.of("headerName",token.getHeaderName(),"token",token.getToken());}
