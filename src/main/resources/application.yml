@@ -24,10 +24,10 @@ spring:
       max-request-size: 30MB
 
   mail:
-    host: smtp.gmail.com
-    port: 587
+    host: smtp.hostinger.com
+    port: 465
     username: ${SMTP_USERNAME}
-    password: "geud sjua tsux qclt"
+    password: ${SMTP_PASSWORD}
     properties:
       mail:
         smtp:
