@@ -24,10 +24,10 @@ spring:
       max-request-size: 30MB
 
   mail:
-    host: ${SMTP_HOST}
-    port: ${SMTP_PORT}
-    username: ${SMTP_USERNAME}
-    password: ${SMTP_PASSWORD}
+    host: smtp.hostinger.com
+    port: 587
+    username: info@mymitraa.com
+    password: 6pt9-k68o-wzz8-xo8h
     properties:
       mail:
         smtp:
@@ -111,5 +111,5 @@ app:
       webhook-secret: ${RAZORPAY_WEBHOOK_SECRET:}
 
   notifications:
-    from-email: ${NOTIFICATION_FROM_EMAIL}
+    from-email: info@mymitraa.com
     dispatch-ms: 3000
