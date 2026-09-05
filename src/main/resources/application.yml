@@ -24,8 +24,8 @@ spring:
       max-request-size: 30MB
 
   mail:
-    host: smtp.hostinger.com
-    port: 465
+    host: ${SMTP_HOST}
+    port: ${SMTP_PORT}
     username: ${SMTP_USERNAME}
     password: ${SMTP_PASSWORD}
     properties:
