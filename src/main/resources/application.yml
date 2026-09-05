@@ -26,7 +26,7 @@ spring:
   mail:
     host: smtp.gmail.com
     port: 587
-    username: sk.litonn79@gmail.com
+    username: ${SMTP_USERNAME}
     password: "geud sjua tsux qclt"
     properties:
       mail:
@@ -111,5 +111,5 @@ app:
       webhook-secret: ${RAZORPAY_WEBHOOK_SECRET:}
 
   notifications:
-    from-email: sk.litonn79@gmail.com
+    from-email: ${NOTIFICATION_FROM_EMAIL}
     dispatch-ms: 3000
