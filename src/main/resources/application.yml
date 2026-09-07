@@ -104,6 +104,10 @@ app:
           capacity: 5
           refill-period: 15m
 
+        - path: /api/payments/create-order-after-verification
+          capacity: 5
+          refill-period: 10m
+
   payment:
     razorpay:
       key-id: ${RAZORPAY_KEY_ID:}

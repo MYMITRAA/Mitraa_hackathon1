@@ -10,6 +10,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.web.bind.annotation.*;
 import java.util.Map;
+import jakarta.servlet.http.HttpSession;
+import java.time.Instant;
+import java.util.Locale;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -21,7 +24,15 @@ public class AuthController {
    Registration r=auth.register(req);
    return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("registrationId",r.getRegistrationCode(),"email",r.getUser().getEmail(),"status",r.getStatus().name(),"message","Account created. Enter the OTP sent to your email to activate it."));
  }
- @PostMapping("/verify-email") public Map<String,String> verify(@RequestBody Map<String,String> body){security.verifyEmail(body.get("email"),body.get("otp"));return Map.of("message","Email verified. You can now sign in.");}
+ @PostMapping("/verify-email")
+ public Map<String,String> verify(@RequestBody Map<String,String> body, HttpSession session){
+   String email=body.get("email");
+   security.verifyEmail(email,body.get("otp"));
+   String normalized=email==null?"":email.trim().toLowerCase(Locale.ROOT);
+   session.setAttribute("MITRAA_PENDING_PAYMENT_EMAIL",normalized);
+   session.setAttribute("MITRAA_PENDING_PAYMENT_AT",Instant.now());
+   return Map.of("message","Email verified. Redirecting to secure payment.","paymentUrl","/payment.html");
+ }
  @PostMapping("/resend-otp") public Map<String,String> resend(@RequestBody Map<String,String> body){security.resendVerification(body.get("email"));return generic();}
  @PostMapping("/forgot-password") public Map<String,String> forgot(@RequestBody Map<String,String> body){security.requestPasswordReset(body.get("email"));return generic();}
  @PostMapping("/reset-password") public Map<String,String> reset(@RequestBody Map<String,String> body){security.resetPassword(body.get("email"),body.get("otp"),body.get("password"));return Map.of("message","Password changed securely. You can now sign in.");}

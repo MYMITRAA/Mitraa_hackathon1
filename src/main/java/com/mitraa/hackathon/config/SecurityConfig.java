@@ -2,13 +2,21 @@ package com.mitraa.hackathon.config;
 
 import com.mitraa.hackathon.auth.sso.GitHubEmailOAuth2UserService;
 import com.mitraa.hackathon.auth.sso.OAuthLoginSuccessHandler;
+import com.mitraa.hackathon.payment.PaymentRepository;
+import com.mitraa.hackathon.payment.PaymentStatus;
+import com.mitraa.hackathon.registration.RegistrationRepository;
 import com.mitraa.hackathon.security.AuthenticationRateLimitFilter;
 import com.mitraa.hackathon.security.RateLimitProperties;
 import com.mitraa.hackathon.user.UserRepository;
+
+import jakarta.servlet.http.HttpSession;
+
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -31,12 +39,15 @@ public class SecurityConfig {
 
     @Bean
     UserDetailsService userDetailsService(UserRepository users) {
+
         return username -> users.findByEmailIgnoreCase(username)
+
                 .map(user -> User.withUsername(user.getEmail())
                         .password(user.getPasswordHash())
                         .roles(user.getRole().name())
                         .disabled(!user.isEnabled())
                         .build())
+
                 .orElseThrow(() ->
                         new UsernameNotFoundException("User not found"));
     }
@@ -47,11 +58,23 @@ public class SecurityConfig {
             ObjectProvider<ClientRegistrationRepository> clientRegistrations,
             GitHubEmailOAuth2UserService oauth2UserService,
             OAuthLoginSuccessHandler oauthSuccessHandler,
-            RateLimitProperties rateLimits) throws Exception {
+            RateLimitProperties rateLimits,
+            UserRepository users,
+            RegistrationRepository registrations,
+            PaymentRepository payments) throws Exception {
+
         http
+
+                // =========================================================
+                // AUTHORIZATION
+                // =========================================================
+
                 .authorizeHttpRequests(auth -> auth
 
-                        // Public pages and files
+                        // -------------------------------------------------
+                        // Public pages and static files
+                        // -------------------------------------------------
+
                         .requestMatchers(
                                 "/",
                                 "/index.html",
@@ -62,6 +85,11 @@ public class SecurityConfig {
                                 "/login.html",
                                 "/verify-email.html",
                                 "/forgot-password.html",
+
+                                // Payment activation page
+                                "/payment.html",
+                                "/payment.js",
+
                                 "/profile.css",
                                 "/privacy.html",
                                 "/terms.html",
@@ -69,6 +97,7 @@ public class SecurityConfig {
                                 "/code-of-conduct.html",
                                 "/refund-policy.html",
                                 "/child-safety.html",
+
                                 "/styles.css",
                                 "/enhancements.css",
                                 "/mission.css",
@@ -78,47 +107,108 @@ public class SecurityConfig {
                                 "/social-links.css",
                                 "/team-builder.css",
                                 "/quality.css",
+
                                 "/app.js",
                                 "/portal.js",
                                 "/sso-login.js",
                                 "/security-api.js",
                                 "/quality.js",
+                                "/login-message.js",
+
                                 "/assets/**",
+
                                 "/robots.txt",
                                 "/sitemap.xml"
+
                         ).permitAll()
 
+
+                        // -------------------------------------------------
                         // Public authentication APIs
+                        // -------------------------------------------------
+
                         .requestMatchers(
                                 "/api/auth/register",
                                 "/api/auth/verify-email",
                                 "/api/auth/resend-otp",
                                 "/api/auth/forgot-password",
-                                "/api/auth/reset-password"
-                                ,"/api/auth/sso/providers"
+                                "/api/auth/reset-password",
+                                "/api/auth/sso/providers",
+
+                                // CSRF token is safe to expose publicly.
+                                // Actual POST requests still require CSRF.
+                                "/api/auth/csrf"
+
                         ).permitAll()
 
-                        .requestMatchers("/oauth2/**", "/login/oauth2/**").permitAll()
 
+                        // -------------------------------------------------
+                        // PAYMENT ACTIVATION APIs
+                        // -------------------------------------------------
+                        //
+                        // Payment happens BEFORE LOGIN.
+                        //
+                        // These endpoints therefore MUST be public.
+                        //
+
+                        .requestMatchers(
+                                "/api/payments/create-order-after-verification",
+                                "/api/payments/verification-status",
+                                "/api/payments/verify-after-checkout"
+
+                        ).permitAll()
+
+
+                        // -------------------------------------------------
+                        // OAuth endpoints
+                        // -------------------------------------------------
+
+                        .requestMatchers(
+                                "/oauth2/**",
+                                "/login/oauth2/**"
+
+                        ).permitAll()
+
+
+                        // -------------------------------------------------
                         // Provider webhooks
+                        // -------------------------------------------------
+
                         .requestMatchers(
                                 "/api/verification/webhook",
                                 "/api/payments/webhook"
+
                         ).permitAll()
 
+
+                        // -------------------------------------------------
                         // Public health endpoint
+                        // -------------------------------------------------
+
                         .requestMatchers("/actuator/health")
                         .permitAll()
 
-                        // Admin and Super Admin access
+
+                        // -------------------------------------------------
+                        // Admin and Super Admin
+                        // -------------------------------------------------
+
                         .requestMatchers(
                                 "/admin.html",
                                 "/admin.js",
                                 "/admin.css",
                                 "/api/admin/**"
-                        ).hasAnyRole("ADMIN", "SUPER_ADMIN")
 
+                        ).hasAnyRole(
+                                "ADMIN",
+                                "SUPER_ADMIN"
+                        )
+
+
+                        // -------------------------------------------------
                         // Participant-only access
+                        // -------------------------------------------------
+
                         .requestMatchers(
                                 "/dashboard.html",
                                 "/profile.html",
@@ -129,25 +219,45 @@ public class SecurityConfig {
                                 "/api/guardian/**",
                                 "/api/teams/**",
                                 "/api/submissions/**"
+
                         ).hasRole("PARTICIPANT")
 
-                        // Available to every authenticated account
+
+                        // -------------------------------------------------
+                        // Authenticated account APIs
+                        // -------------------------------------------------
+
                         .requestMatchers(
                                 "/api/auth/me",
-                                "/api/auth/csrf",
                                 "/api/invoices/**"
+
                         ).authenticated()
+
+
+                        // -------------------------------------------------
+                        // Everything else
+                        // -------------------------------------------------
 
                         .anyRequest().authenticated()
                 )
 
+
+                // =========================================================
+                // CSRF
+                // =========================================================
+
                 .csrf(csrf -> csrf
+
                         .csrfTokenRepository(
                                 CookieCsrfTokenRepository.withHttpOnlyFalse()
                         )
+
                         .csrfTokenRequestHandler(
                                 new CsrfTokenRequestAttributeHandler()
                         )
+
+                        // Webhooks and selected authentication endpoints
+                        // intentionally do not require CSRF.
                         .ignoringRequestMatchers(
                                 "/api/auth/register",
                                 "/api/auth/login",
@@ -156,71 +266,254 @@ public class SecurityConfig {
                                 "/api/auth/resend-otp",
                                 "/api/auth/forgot-password",
                                 "/api/auth/reset-password",
+
                                 "/api/payments/webhook",
                                 "/api/verification/webhook"
                         )
                 )
 
-                .formLogin(form -> form
-                        .loginPage("/login.html")
-                        .loginProcessingUrl("/api/auth/login")
-                        .usernameParameter("email")
-                        .passwordParameter("password")
-                        .successHandler((request, response, authentication) -> {
-                            boolean administrator =
-                                    authentication.getAuthorities()
-                                            .stream()
-                                            .anyMatch(authority ->
-                                                    "ROLE_ADMIN".equals(
-                                                            authority.getAuthority()
-                                                    )
-                                                    || "ROLE_SUPER_ADMIN".equals(
-                                                            authority.getAuthority()
-                                                    )
-                                            );
 
-                            if (administrator) {
-                                response.sendRedirect("/admin.html");
-                            } else {
-                                response.sendRedirect("/dashboard.html");
-                            }
-                        })
-                        .failureUrl("/login.html?error=true")
+                // =========================================================
+                // FORM LOGIN
+                // =========================================================
+
+                .formLogin(form -> form
+
+                        .loginPage("/login.html")
+
+                        .loginProcessingUrl("/api/auth/login")
+
+                        .usernameParameter("email")
+
+                        .passwordParameter("password")
+
+                        .successHandler(
+                                (request, response, authentication) -> {
+
+                                    boolean administrator =
+                                            authentication
+                                                    .getAuthorities()
+                                                    .stream()
+                                                    .anyMatch(authority ->
+                                                            "ROLE_ADMIN"
+                                                                    .equals(
+                                                                            authority
+                                                                                    .getAuthority()
+                                                                    )
+                                                                    ||
+                                                            "ROLE_SUPER_ADMIN"
+                                                                    .equals(
+                                                                            authority
+                                                                                    .getAuthority()
+                                                                    )
+                                                    );
+
+
+                                    // ------------------------------------
+                                    // ADMIN LOGIN
+                                    // ------------------------------------
+
+                                    if (administrator) {
+
+                                        response.sendRedirect(
+                                                "/admin.html"
+                                        );
+
+                                        return;
+                                    }
+
+
+                                    // ------------------------------------
+                                    // PARTICIPANT LOGIN
+                                    // ------------------------------------
+
+                                    var user =
+                                            users.findByEmailIgnoreCase(
+                                                    authentication.getName()
+                                            ).orElse(null);
+
+
+                                    if (user == null) {
+
+                                        response.sendRedirect(
+                                                "/login.html?error=true"
+                                        );
+
+                                        return;
+                                    }
+
+
+                                    var registration =
+                                            registrations
+                                                    .findByUser(user)
+                                                    .orElse(null);
+
+
+                                    boolean paid =
+                                            registration != null
+                                                    &&
+                                            payments
+                                                    .findTopByRegistrationAndStatusOrderByCreatedAtDesc(
+                                                            registration,
+                                                            PaymentStatus.PAID
+                                                    )
+                                                    .isPresent();
+
+
+                                    // ------------------------------------
+                                    // PAYMENT NOT COMPLETED
+                                    // ------------------------------------
+
+                                    if (!paid) {
+
+                                        // Remove authenticated context
+                                        SecurityContextHolder
+                                                .clearContext();
+
+
+                                        // Create fresh payment session
+                                        HttpSession oldSession =
+                                                request.getSession(false);
+
+
+                                        if (oldSession != null) {
+                                            oldSession.invalidate();
+                                        }
+
+
+                                        HttpSession paymentSession =
+                                                request.getSession(true);
+
+
+                                        paymentSession.setAttribute(
+                                                "MITRAA_PENDING_PAYMENT_EMAIL",
+                                                user.getEmail()
+                                        );
+
+
+                                        paymentSession.setAttribute(
+                                                "MITRAA_PENDING_PAYMENT_AT",
+                                                java.time.Instant.now()
+                                        );
+
+
+                                        response.sendRedirect(
+                                                "/login.html?paymentRequired=true"
+                                        );
+
+                                        return;
+                                    }
+
+
+                                    // ------------------------------------
+                                    // PAYMENT COMPLETED
+                                    // ------------------------------------
+
+                                    response.sendRedirect(
+                                            "/dashboard.html"
+                                    );
+                                }
+                        )
+
+                        .failureUrl(
+                                "/login.html?error=true"
+                        )
+
                         .permitAll()
                 )
 
+
+                // =========================================================
+                // LOGOUT
+                // =========================================================
+
                 .logout(logout -> logout
+
                         .logoutUrl("/api/auth/logout")
+
                         .logoutSuccessUrl("/index.html")
+
                         .invalidateHttpSession(true)
+
                         .deleteCookies("JSESSIONID")
                 )
 
+
+                // =========================================================
+                // SESSION MANAGEMENT
+                // =========================================================
+
                 .sessionManagement(session -> session
-                        .sessionFixation(fixation -> fixation.migrateSession())
+
+                        .sessionFixation(fixation ->
+                                fixation.migrateSession()
+                        )
                 )
+
+
+                // =========================================================
+                // SECURITY HEADERS
+                // =========================================================
 
                 .headers(headers -> headers
-                        .contentTypeOptions(contentType -> {})
-                        .frameOptions(frame -> frame.deny())
-                        .referrerPolicy(referrer -> referrer.policy(
-                                ReferrerPolicyHeaderWriter.ReferrerPolicy.STRICT_ORIGIN_WHEN_CROSS_ORIGIN
-                        ))
-                        .permissionsPolicy(permissions -> permissions.policy(
-                                "camera=(), microphone=(), geolocation=(), payment=(self)"
-                        ))
+
+                        .contentTypeOptions(
+                                contentType -> {}
+                        )
+
+                        .frameOptions(frame ->
+                                frame.deny()
+                        )
+
+                        .referrerPolicy(referrer ->
+                                referrer.policy(
+                                        ReferrerPolicyHeaderWriter
+                                                .ReferrerPolicy
+                                                .STRICT_ORIGIN_WHEN_CROSS_ORIGIN
+                                )
+                        )
+
+                        .permissionsPolicy(permissions ->
+                                permissions.policy(
+                                        "camera=(), microphone=(), " +
+                                        "geolocation=(), payment=(self)"
+                                )
+                        )
                 )
-                .addFilterBefore(new AuthenticationRateLimitFilter(rateLimits),
-                        UsernamePasswordAuthenticationFilter.class);
+
+
+                // =========================================================
+                // RATE LIMITING
+                // =========================================================
+
+                .addFilterBefore(
+                        new AuthenticationRateLimitFilter(rateLimits),
+                        UsernamePasswordAuthenticationFilter.class
+                );
+
+
+        // =============================================================
+        // GOOGLE / GITHUB OAUTH2
+        // =============================================================
 
         if (clientRegistrations.getIfAvailable() != null) {
+
             http.oauth2Login(oauth -> oauth
+
                     .loginPage("/login.html")
-                    .userInfoEndpoint(userInfo -> userInfo.userService(oauth2UserService))
+
+                    .userInfoEndpoint(userInfo ->
+                            userInfo.userService(oauth2UserService)
+                    )
+
                     .successHandler(oauthSuccessHandler)
-                    .failureUrl("/login.html?ssoError=true")
+
+                    .failureUrl(
+                            "/login.html?ssoError=true"
+                    )
             );
         }
+
 
         return http.build();
     }

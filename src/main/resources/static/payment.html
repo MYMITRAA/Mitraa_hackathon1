@@ -1,0 +1,65 @@
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Complete Payment | MiTRAA Hackathons</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="account.css">
+  <link rel="stylesheet" href="responsive.css">
+  <link rel="stylesheet" href="quality.css">
+  <script src="https://checkout.razorpay.com/v1/checkout.js" defer></script>
+</head>
+<body class="auth-page">
+  <div class="auth-shell auth-shell-premium">
+    <aside class="auth-aside auth-brand-panel">
+      <img src="assets/mitraa-hackathons-logo.jpeg" alt="MiTRAA Hackathons">
+      <span class="india-badge">SECURE ACTIVATION</span>
+      <h1>One final step.<br>Enter your arena.</h1>
+      <p>Your email has been verified. Complete the secure entry payment to activate login access.</p>
+      <ul class="trust-list">
+        <li>Secure Razorpay checkout</li>
+        <li>Server-confirmed payment</li>
+        <li>Invoice generated after confirmation</li>
+      </ul>
+    </aside>
+
+    <main class="auth-main">
+      <a href="login.html" class="auth-note">← Back to login</a>
+
+      <div class="auth-heading">
+        <span class="eyebrow">PAYMENT REQUIRED</span>
+        <h2>Complete your registration</h2>
+        <p>Payment is required before you can sign in to the participant portal.</p>
+      </div>
+
+      <section class="panel workflow-panel">
+        <div class="section-line">
+          <div>
+            <small class="eyebrow">ENTRY PAYMENT</small>
+            <h3>Secure checkout</h3>
+          </div>
+          <b id="paymentState">CHECKING</b>
+        </div>
+
+        <p class="auth-note">Player ID: <strong id="registrationId">Loading…</strong></p>
+        <p class="auth-note">Entry: <strong id="entryType">Loading…</strong></p>
+        <p class="auth-note" id="paymentPrice">Loading price…</p>
+
+        <button id="payNow" class="btn btn-primary btn-lg auth-primary" type="button" disabled>
+          Pay and activate
+        </button>
+
+        <p id="paymentStatus" class="form-status" role="status" aria-live="polite">
+          Preparing secure payment…
+        </p>
+      </section>
+    </main>
+  </div>
+
+  <script src="payment.js"></script>
+  <script src="quality.js" defer></script>
+</body>
+</html>

@@ -1,6 +1,10 @@
 package com.mitraa.hackathon.auth.sso;
 
 import com.mitraa.hackathon.user.User;
+import com.mitraa.hackathon.registration.RegistrationRepository;
+import com.mitraa.hackathon.payment.PaymentRepository;
+import com.mitraa.hackathon.payment.PaymentStatus;
+import java.time.Instant;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -21,11 +25,15 @@ import org.springframework.stereotype.Component;
 @Component
 public class OAuthLoginSuccessHandler implements AuthenticationSuccessHandler {
     private final OAuthAccountService accounts;
+    private final RegistrationRepository registrations;
+    private final PaymentRepository payments;
     private final HttpSessionSecurityContextRepository contexts =
             new HttpSessionSecurityContextRepository();
 
-    public OAuthLoginSuccessHandler(OAuthAccountService accounts) {
+    public OAuthLoginSuccessHandler(OAuthAccountService accounts, RegistrationRepository registrations, PaymentRepository payments) {
         this.accounts = accounts;
+        this.registrations = registrations;
+        this.payments = payments;
     }
 
     @Override
@@ -61,6 +69,24 @@ public class OAuthLoginSuccessHandler implements AuthenticationSuccessHandler {
 
         boolean administrator = user.getRole().name().equals("ADMIN")
                 || user.getRole().name().equals("SUPER_ADMIN");
+
+        if (!administrator) {
+            var registration = registrations.findByUser(user).orElse(null);
+            boolean paid = registration != null && payments
+                    .findTopByRegistrationAndStatusOrderByCreatedAtDesc(registration, PaymentStatus.PAID)
+                    .isPresent();
+
+            if (!paid) {
+                SecurityContextHolder.clearContext();
+                if (request.getSession(false) != null) request.getSession(false).invalidate();
+                var paymentSession = request.getSession(true);
+                paymentSession.setAttribute("MITRAA_PENDING_PAYMENT_EMAIL", user.getEmail());
+                paymentSession.setAttribute("MITRAA_PENDING_PAYMENT_AT", Instant.now());
+                response.sendRedirect("/login.html?paymentRequired=true");
+                return;
+            }
+        }
+
         response.sendRedirect(administrator ? "/admin.html" : "/dashboard.html");
     }
 
