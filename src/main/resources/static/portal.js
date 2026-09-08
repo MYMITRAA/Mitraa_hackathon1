@@ -13,7 +13,10 @@ function ageFromDob(v) {
 
     if (
         n.getMonth() < d.getMonth() ||
-        (n.getMonth() === d.getMonth() && n.getDate() < d.getDate())
+        (
+            n.getMonth() === d.getMonth() &&
+            n.getDate() < d.getDate()
+        )
     ) {
         a--;
     }
@@ -22,10 +25,19 @@ function ageFromDob(v) {
 }
 
 function tone() {
-    if (localStorage.getItem('mitraaSound') === 'off') return;
+    if (
+        localStorage.getItem('mitraaSound') === 'off'
+    ) {
+        return;
+    }
 
-    const C = window.AudioContext || window.webkitAudioContext;
-    if (!C) return;
+    const C =
+        window.AudioContext ||
+        window.webkitAudioContext;
+
+    if (!C) {
+        return;
+    }
 
     const c = new C();
 
@@ -52,33 +64,57 @@ function tone() {
 
         o.connect(g).connect(c.destination);
 
-        o.start(c.currentTime + i * .08);
-        o.stop(c.currentTime + i * .08 + .16);
+        o.start(
+            c.currentTime + i * .08
+        );
+
+        o.stop(
+            c.currentTime + i * .08 + .16
+        );
     });
 }
 
 function csrf() {
     const t = document.cookie
         .split('; ')
-        .find(v => v.startsWith('XSRF-TOKEN='))
+        .find(
+            v => v.startsWith('XSRF-TOKEN=')
+        )
         ?.split('=')[1];
 
     return t
-        ? { 'X-XSRF-TOKEN': decodeURIComponent(t) }
+        ? {
+            'X-XSRF-TOKEN':
+                decodeURIComponent(t)
+        }
         : {};
 }
 
-async function api(url, opt = {}) {
-    const r = await fetch(url, {
-        ...opt,
-        headers: {
-            ...(opt.body
-                ? { 'Content-Type': 'application/json' }
-                : {}),
-            ...csrf(),
-            ...(opt.headers || {})
+async function api(
+    url,
+    opt = {}
+) {
+    const r = await fetch(
+        url,
+        {
+            ...opt,
+
+            headers: {
+                ...(
+                    opt.body
+                        ? {
+                            'Content-Type':
+                                'application/json'
+                        }
+                        : {}
+                ),
+
+                ...csrf(),
+
+                ...(opt.headers || {})
+            }
         }
-    });
+    );
 
     let d = {};
 
@@ -104,19 +140,28 @@ function isIndia(v) {
         'ind',
         'bharat'
     ].includes(
-        (v || '').trim().toLowerCase()
+        (v || '')
+            .trim()
+            .toLowerCase()
     );
 }
-
 
 /* =========================================================
    REGISTRATION PRICING
    ========================================================= */
 
 function updatePricing() {
-    if (!$('country') || !$('ptype')) return;
+    if (
+        !$('country') ||
+        !$('ptype')
+    ) {
+        return;
+    }
 
-    const i = isIndia($('country').value);
+    const i =
+        isIndia(
+            $('country').value
+        );
 
     $('ptype').options[0].textContent =
         i
@@ -136,7 +181,9 @@ function updatePricing() {
     }
 
     document
-        .querySelectorAll('[data-market-card]')
+        .querySelectorAll(
+            '[data-market-card]'
+        )
         .forEach(card => {
             card.classList.toggle(
                 'active',
@@ -147,7 +194,11 @@ function updatePricing() {
 }
 
 if ($('country')) {
-    ['input', 'change', 'blur'].forEach(eventName => {
+    [
+        'input',
+        'change',
+        'blur'
+    ].forEach(eventName => {
         $('country').addEventListener(
             eventName,
             updatePricing
@@ -157,362 +208,498 @@ if ($('country')) {
     updatePricing();
 }
 
-
 /* =========================================================
    PASSWORD TOGGLE
    ========================================================= */
 
 document
-    .querySelectorAll('[data-password-toggle]')
+    .querySelectorAll(
+        '[data-password-toggle]'
+    )
     .forEach(button => {
-        button.addEventListener('click', () => {
-            const input = $(button.dataset.passwordToggle);
+        button.addEventListener(
+            'click',
+            () => {
+                const input =
+                    $(
+                        button.dataset
+                            .passwordToggle
+                    );
 
-            if (!input) return;
+                if (!input) {
+                    return;
+                }
 
-            const visible = input.type === 'text';
+                const visible =
+                    input.type === 'text';
 
-            input.type = visible
-                ? 'password'
-                : 'text';
+                input.type =
+                    visible
+                        ? 'password'
+                        : 'text';
 
-            button.textContent = visible
-                ? 'Show'
-                : 'Hide';
+                button.textContent =
+                    visible
+                        ? 'Show'
+                        : 'Hide';
 
-            button.setAttribute(
-                'aria-label',
-                visible
-                    ? 'Show password'
-                    : 'Hide password'
-            );
-        });
+                button.setAttribute(
+                    'aria-label',
+                    visible
+                        ? 'Show password'
+                        : 'Hide password'
+                );
+            }
+        );
     });
-
 
 /* =========================================================
    OTP BOXES
    ========================================================= */
 
 document
-    .querySelectorAll('.otp-boxes')
+    .querySelectorAll(
+        '.otp-boxes'
+    )
     .forEach(group => {
-
         const boxes = [
-            ...group.querySelectorAll('input')
+            ...group.querySelectorAll(
+                'input'
+            )
         ];
 
-        const target = $(
-            group.dataset.otpTarget
-        );
+        const target =
+            $(
+                group.dataset
+                    .otpTarget
+            );
 
         const sync = () => {
             if (target) {
-                target.value = boxes
-                    .map(box => box.value)
-                    .join('');
+                target.value =
+                    boxes
+                        .map(
+                            box =>
+                                box.value
+                        )
+                        .join('');
             }
         };
 
-        boxes.forEach((box, index) => {
+        boxes.forEach(
+            (box, index) => {
 
-            box.addEventListener('input', () => {
+                box.addEventListener(
+                    'input',
+                    () => {
+                        box.value =
+                            box.value
+                                .replace(
+                                    /\D/g,
+                                    ''
+                                )
+                                .slice(-1);
 
-                box.value = box.value
-                    .replace(/\D/g, '')
-                    .slice(-1);
+                        sync();
 
-                sync();
-
-                if (
-                    box.value &&
-                    boxes[index + 1]
-                ) {
-                    boxes[index + 1].focus();
-                }
-            });
-
-            box.addEventListener(
-                'keydown',
-                event => {
-
-                    if (
-                        event.key === 'Backspace' &&
-                        !box.value &&
-                        boxes[index - 1]
-                    ) {
-                        boxes[index - 1].focus();
-                    }
-
-                    if (
-                        event.key === 'ArrowLeft' &&
-                        boxes[index - 1]
-                    ) {
-                        boxes[index - 1].focus();
-                    }
-
-                    if (
-                        event.key === 'ArrowRight' &&
-                        boxes[index + 1]
-                    ) {
-                        boxes[index + 1].focus();
-                    }
-                }
-            );
-
-            box.addEventListener('paste', event => {
-
-                const digits =
-                    event.clipboardData
-                        .getData('text')
-                        .replace(/\D/g, '')
-                        .slice(0, 6);
-
-                if (!digits) return;
-
-                event.preventDefault();
-
-                digits
-                    .split('')
-                    .forEach((digit, i) => {
-                        if (boxes[i]) {
-                            boxes[i].value = digit;
+                        if (
+                            box.value &&
+                            boxes[index + 1]
+                        ) {
+                            boxes[
+                                index + 1
+                            ].focus();
                         }
-                    });
+                    }
+                );
 
-                sync();
+                box.addEventListener(
+                    'keydown',
+                    event => {
 
-                boxes[
-                    Math.min(digits.length, 6) - 1
-                ].focus();
-            });
-        });
+                        if (
+                            event.key ===
+                            'Backspace' &&
+                            !box.value &&
+                            boxes[
+                                index - 1
+                            ]
+                        ) {
+                            boxes[
+                                index - 1
+                            ].focus();
+                        }
+
+                        if (
+                            event.key ===
+                            'ArrowLeft' &&
+                            boxes[
+                                index - 1
+                            ]
+                        ) {
+                            boxes[
+                                index - 1
+                            ].focus();
+                        }
+
+                        if (
+                            event.key ===
+                            'ArrowRight' &&
+                            boxes[
+                                index + 1
+                            ]
+                        ) {
+                            boxes[
+                                index + 1
+                            ].focus();
+                        }
+                    }
+                );
+
+                box.addEventListener(
+                    'paste',
+                    event => {
+                        const digits =
+                            event
+                                .clipboardData
+                                .getData(
+                                    'text'
+                                )
+                                .replace(
+                                    /\D/g,
+                                    ''
+                                )
+                                .slice(
+                                    0,
+                                    6
+                                );
+
+                        if (!digits) {
+                            return;
+                        }
+
+                        event
+                            .preventDefault();
+
+                        digits
+                            .split('')
+                            .forEach(
+                                (
+                                    digit,
+                                    i
+                                ) => {
+                                    if (
+                                        boxes[i]
+                                    ) {
+                                        boxes[
+                                            i
+                                        ].value =
+                                            digit;
+                                    }
+                                }
+                            );
+
+                        sync();
+
+                        boxes[
+                            Math.min(
+                                digits.length,
+                                6
+                            ) - 1
+                        ].focus();
+                    }
+                );
+            }
+        );
     });
-
 
 /* =========================================================
    REGISTRATION
    ========================================================= */
 
 if ($('dob')) {
-    $('dob').addEventListener('change', () => {
-
-        const a = ageFromDob(
-            $('dob').value
-        );
-
-        const minor =
-            a >= 10 && a < 18;
-
-        $('guardianFields').hidden = !minor;
-        $('guardianCommitment').hidden = !minor;
-
-        [
-            'guardianName',
-            'guardianEmail',
-            'guardianRelationship',
-            'guardianPhone',
-            'guardianCountry'
-        ].forEach(id => {
-            $(id).required = minor;
-        });
-    });
-}
-
-if ($('registerForm')) {
-
-    $('registerForm').addEventListener(
-        'submit',
-        async e => {
-
-            e.preventDefault();
-
-            const s = $('registerStatus');
-
-            const a = ageFromDob(
-                $('dob').value
-            );
-
-            const password =
-                $('password').value;
-
-            if (password !== password.trim()) {
-                s.textContent =
-                    'Password must not start or end with a space.';
-                return;
-            }
-
-            if (a < 10 || a > 35) {
-                s.textContent =
-                    'Eligibility failed: participants must be aged 10–35.';
-                return;
-            }
-
-            if (
-                a < 18 &&
-                !$('guardian').checked
-            ) {
-                s.textContent =
-                    'Confirm that the guardian will complete consent.';
-                return;
-            }
-
-            if (
-                a < 18 &&
-                [
-                    'guardianName',
-                    'guardianEmail',
-                    'guardianRelationship',
-                    'guardianPhone',
-                    'guardianCountry'
-                ].some(
-                    id => !$(id).value.trim()
-                )
-            ) {
-                s.textContent =
-                    'All guardian contact fields are required.';
-                return;
-            }
-
-            if (
-                password !==
-                $('confirmPassword').value
-            ) {
-                s.textContent =
-                    'Passwords do not match.';
-                return;
-            }
-
-            const raw =
-                $('phone').value
-                    .replace(/[^0-9]/g, '');
-
-            const code =
-                $('country')
-                    .selectedOptions[0]
-                    ?.dataset.code || '';
-
-            const india =
-                isIndia(
-                    $('country').value
+    $('dob').addEventListener(
+        'change',
+        () => {
+            const a =
+                ageFromDob(
+                    $('dob').value
                 );
 
-            if (
-                raw.length < 6 ||
-                raw.length > (india ? 10 : 15)
-            ) {
-                s.textContent =
-                    india
-                        ? 'Indian mobile number cannot exceed 10 digits.'
-                        : 'Enter a valid mobile number.';
-                return;
-            }
+            const minor =
+                a >= 10 &&
+                a < 18;
 
-            try {
+            $('guardianFields')
+                .hidden =
+                !minor;
 
-                const d = await api(
-                    '/api/auth/register',
-                    {
-                        method: 'POST',
+            $('guardianCommitment')
+                .hidden =
+                !minor;
 
-                        body: JSON.stringify({
-
-                            fullName:
-                                $('name').value,
-
-                            email:
-                                $('email').value,
-
-                            password,
-
-                            dateOfBirth:
-                                $('dob').value,
-
-                            phone:
-                                code + raw,
-
-                            country:
-                                $('country').value,
-
-                            city:
-                                $('city').value,
-
-                            participationType:
-                                $('ptype').value,
-
-                            domain:
-                                $('domain').value,
-
-                            termsAccepted:
-                                $('terms').checked,
-
-                            privacyAccepted:
-                                $('privacy').checked,
-
-                            rulesAccepted:
-                                $('rulesAccepted').checked,
-
-                            guardianConsent:
-                                a < 18
-                                    ? $('guardian').checked
-                                    : false,
-
-                            guardianName:
-                                a < 18
-                                    ? $('guardianName').value
-                                    : null,
-
-                            guardianEmail:
-                                a < 18
-                                    ? $('guardianEmail').value
-                                    : null,
-
-                            guardianRelationship:
-                                a < 18
-                                    ? $('guardianRelationship').value
-                                    : null,
-
-                            guardianPhone:
-                                a < 18
-                                    ? $('guardianPhone').value
-                                    : null,
-
-                            guardianCountry:
-                                a < 18
-                                    ? $('guardianCountry').value
-                                    : null,
-
-                            marketingConsent:
-                                $('marketing').checked
-                        })
-                    }
-                );
-
-                tone();
-
-                s.textContent =
-                    `Player ID ${d.registrationId} created. Redirecting to email verification…`;
-
-                sessionStorage.setItem(
-                    'pendingVerificationEmail',
-                    d.email
-                );
-
-                setTimeout(
-                    () => {
-                        location.href =
-                            '/verify-email';
-                    },
-                    900
-                );
-
-            } catch (x) {
-                s.textContent = x.message;
-            }
+            [
+                'guardianName',
+                'guardianEmail',
+                'guardianRelationship',
+                'guardianPhone',
+                'guardianCountry'
+            ].forEach(id => {
+                $(id).required =
+                    minor;
+            });
         }
     );
 }
 
+if ($('registerForm')) {
+    $('registerForm')
+        .addEventListener(
+            'submit',
+            async e => {
+
+                e.preventDefault();
+
+                const s =
+                    $('registerStatus');
+
+                const a =
+                    ageFromDob(
+                        $('dob').value
+                    );
+
+                const password =
+                    $('password')
+                        .value;
+
+                if (
+                    password !==
+                    password.trim()
+                ) {
+                    s.textContent =
+                        'Password must not start or end with a space.';
+
+                    return;
+                }
+
+                if (
+                    a < 10 ||
+                    a > 35
+                ) {
+                    s.textContent =
+                        'Eligibility failed: participants must be aged 10–35.';
+
+                    return;
+                }
+
+                if (
+                    a < 18 &&
+                    !$('guardian')
+                        .checked
+                ) {
+                    s.textContent =
+                        'Confirm that the guardian will complete consent.';
+
+                    return;
+                }
+
+                if (
+                    a < 18 &&
+                    [
+                        'guardianName',
+                        'guardianEmail',
+                        'guardianRelationship',
+                        'guardianPhone',
+                        'guardianCountry'
+                    ].some(
+                        id =>
+                            !$(id)
+                                .value
+                                .trim()
+                    )
+                ) {
+                    s.textContent =
+                        'All guardian contact fields are required.';
+
+                    return;
+                }
+
+                if (
+                    password !==
+                    $('confirmPassword')
+                        .value
+                ) {
+                    s.textContent =
+                        'Passwords do not match.';
+
+                    return;
+                }
+
+                const raw =
+                    $('phone')
+                        .value
+                        .replace(
+                            /[^0-9]/g,
+                            ''
+                        );
+
+                const code =
+                    $('country')
+                        .selectedOptions[0]
+                        ?.dataset
+                        .code ||
+                    '';
+
+                const india =
+                    isIndia(
+                        $('country')
+                            .value
+                    );
+
+                if (
+                    raw.length < 6 ||
+                    raw.length >
+                    (
+                        india
+                            ? 10
+                            : 15
+                    )
+                ) {
+                    s.textContent =
+                        india
+                            ? 'Indian mobile number cannot exceed 10 digits.'
+                            : 'Enter a valid mobile number.';
+
+                    return;
+                }
+
+                try {
+                    const d =
+                        await api(
+                            '/api/auth/register',
+                            {
+                                method:
+                                    'POST',
+
+                                body:
+                                    JSON.stringify(
+                                        {
+                                            fullName:
+                                                $('name')
+                                                    .value,
+
+                                            email:
+                                                $('email')
+                                                    .value,
+
+                                            password,
+
+                                            dateOfBirth:
+                                                $('dob')
+                                                    .value,
+
+                                            phone:
+                                                code +
+                                                raw,
+
+                                            country:
+                                                $('country')
+                                                    .value,
+
+                                            city:
+                                                $('city')
+                                                    .value,
+
+                                            participationType:
+                                                $('ptype')
+                                                    .value,
+
+                                            domain:
+                                                $('domain')
+                                                    .value,
+
+                                            termsAccepted:
+                                                $('terms')
+                                                    .checked,
+
+                                            privacyAccepted:
+                                                $('privacy')
+                                                    .checked,
+
+                                            rulesAccepted:
+                                                $('rulesAccepted')
+                                                    .checked,
+
+                                            guardianConsent:
+                                                a < 18
+                                                    ? $('guardian')
+                                                        .checked
+                                                    : false,
+
+                                            guardianName:
+                                                a < 18
+                                                    ? $('guardianName')
+                                                        .value
+                                                    : null,
+
+                                            guardianEmail:
+                                                a < 18
+                                                    ? $('guardianEmail')
+                                                        .value
+                                                    : null,
+
+                                            guardianRelationship:
+                                                a < 18
+                                                    ? $('guardianRelationship')
+                                                        .value
+                                                    : null,
+
+                                            guardianPhone:
+                                                a < 18
+                                                    ? $('guardianPhone')
+                                                        .value
+                                                    : null,
+
+                                            guardianCountry:
+                                                a < 18
+                                                    ? $('guardianCountry')
+                                                        .value
+                                                    : null,
+
+                                            marketingConsent:
+                                                $('marketing')
+                                                    .checked
+                                        }
+                                    )
+                            }
+                        );
+
+                    tone();
+
+                    s.textContent =
+                        `Player ID ${d.registrationId} created. Redirecting to email verification…`;
+
+                    sessionStorage
+                        .setItem(
+                            'pendingVerificationEmail',
+                            d.email
+                        );
+
+                    setTimeout(
+                        () => {
+                            location.href =
+                                '/verify-email';
+                        },
+                        900
+                    );
+
+                } catch (x) {
+                    s.textContent =
+                        x.message;
+                }
+            }
+        );
+}
 
 /* =========================================================
    LOGIN ERROR
@@ -520,20 +707,20 @@ if ($('registerForm')) {
 
 if (
     $('loginForm') &&
-    new URLSearchParams(location.search)
-        .has('error')
+    new URLSearchParams(
+        location.search
+    ).has('error')
 ) {
-    $('loginStatus').textContent =
+    $('loginStatus')
+        .textContent =
         'Invalid credentials, disabled account, or unverified email.';
 }
-
 
 /* =========================================================
    TEAM BUILDER
    ========================================================= */
 
 function memberRow(n) {
-
     return `
 <fieldset
     class="member-card"
@@ -601,49 +788,61 @@ function memberRow(n) {
 </fieldset>`;
 }
 
-const MIN_ADDITIONAL_MEMBERS = 2;
-const MAX_ADDITIONAL_MEMBERS = 4;
+const MIN_ADDITIONAL_MEMBERS =
+    2;
+
+const MAX_ADDITIONAL_MEMBERS =
+    4;
 
 function syncTeamMemberControls() {
 
     const rows = [
-        ...document.querySelectorAll(
-            '#memberRows .member-card'
-        )
+        ...document
+            .querySelectorAll(
+                '#memberRows .member-card'
+            )
     ];
 
-    const add = $('addTeamMember');
-    const count = $('teamMemberCount');
+    const add =
+        $('addTeamMember');
 
-    rows.forEach((row, index) => {
+    const count =
+        $('teamMemberCount');
 
-        const number = index + 2;
+    rows.forEach(
+        (row, index) => {
 
-        row.dataset.memberNumber =
-            number;
+            const number =
+                index + 2;
 
-        row.querySelector(
-            'legend'
-        ).textContent =
-            `Member ${number}`;
+            row.dataset
+                .memberNumber =
+                number;
 
-        const remove =
-            row.querySelector(
-                '[data-remove-member]'
-            );
+            row
+                .querySelector(
+                    'legend'
+                )
+                .textContent =
+                `Member ${number}`;
 
-        if (remove) {
+            const remove =
+                row.querySelector(
+                    '[data-remove-member]'
+                );
 
-            remove.hidden =
-                rows.length <=
-                MIN_ADDITIONAL_MEMBERS;
+            if (remove) {
+                remove.hidden =
+                    rows.length <=
+                    MIN_ADDITIONAL_MEMBERS;
 
-            remove.setAttribute(
-                'aria-label',
-                `Remove Member ${number}`
-            );
+                remove.setAttribute(
+                    'aria-label',
+                    `Remove Member ${number}`
+                );
+            }
         }
-    });
+    );
 
     if (count) {
         count.textContent =
@@ -659,7 +858,8 @@ function syncTeamMemberControls() {
 
 function initializeTeamRows() {
 
-    const rows = $('memberRows');
+    const rows =
+        $('memberRows');
 
     if (
         rows &&
@@ -676,51 +876,52 @@ function initializeTeamRows() {
 }
 
 function teamPayload() {
-
     return {
-
         teamName:
             $('teamName').value,
 
         members:
             [
-                ...document.querySelectorAll(
-                    '.member-card'
-                )
-            ].map(c => ({
+                ...document
+                    .querySelectorAll(
+                        '.member-card'
+                    )
+            ].map(
+                c => ({
+                    fullName:
+                        c.querySelector(
+                            '[data-member="fullName"]'
+                        ).value,
 
-                fullName:
-                    c.querySelector(
-                        '[data-member="fullName"]'
-                    ).value,
+                    email:
+                        c.querySelector(
+                            '[data-member="email"]'
+                        ).value,
 
-                email:
-                    c.querySelector(
-                        '[data-member="email"]'
-                    ).value,
+                    dateOfBirth:
+                        c.querySelector(
+                            '[data-member="dateOfBirth"]'
+                        ).value,
 
-                dateOfBirth:
-                    c.querySelector(
-                        '[data-member="dateOfBirth"]'
-                    ).value,
+                    country:
+                        c.querySelector(
+                            '[data-member="country"]'
+                        ).value,
 
-                country:
-                    c.querySelector(
-                        '[data-member="country"]'
-                    ).value,
-
-                guardianConsent:
-                    c.querySelector(
-                        '[data-member="guardianConsent"]'
-                    ).checked
-
-            }))
+                    guardianConsent:
+                        c.querySelector(
+                            '[data-member="guardianConsent"]'
+                        ).checked
+                })
+            )
     };
 }
 
 async function loadTeam(type) {
 
-    if (!$('teamForm')) return;
+    if (!$('teamForm')) {
+        return;
+    }
 
     const teamSection =
         $('team');
@@ -738,10 +939,12 @@ async function loadTeam(type) {
      */
     if (type !== 'TEAM') {
 
-        teamSection.hidden = true;
+        teamSection.hidden =
+            true;
 
         if (teamNav) {
-            teamNav.hidden = true;
+            teamNav.hidden =
+                true;
         }
 
         if (teamStep) {
@@ -755,10 +958,12 @@ async function loadTeam(type) {
     /*
      * TEAM REGISTRATION
      */
-    teamSection.hidden = false;
+    teamSection.hidden =
+        false;
 
     if (teamNav) {
-        teamNav.hidden = false;
+        teamNav.hidden =
+            false;
     }
 
     if (teamStep) {
@@ -769,15 +974,19 @@ async function loadTeam(type) {
     initializeTeamRows();
 
     try {
-
         const t =
-            await api('/api/teams');
+            await api(
+                '/api/teams'
+            );
 
         if (t.configured) {
 
-            $('teamForm').hidden = true;
+            $('teamForm')
+                .hidden =
+                true;
 
-            $('teamState').textContent =
+            $('teamState')
+                .textContent =
                 'SQUAD LOCKED';
 
             if (teamStep) {
@@ -785,141 +994,337 @@ async function loadTeam(type) {
                     'TEAM ✓';
             }
 
-            $('teamResult').innerHTML = `
+            $('teamResult')
+                .innerHTML =
+                `
 <div class="success-card">
-
     <b>${t.teamName}</b>
-
     <span>
         Code ${t.teamCode}
         • ${t.memberCount} members
     </span>
-
 </div>`;
 
         } else {
 
-            $('teamState').textContent =
+            $('teamState')
+                .textContent =
                 'ACTION REQUIRED';
         }
 
     } catch (e) {
 
-        $('teamStatus').textContent =
+        $('teamStatus')
+            .textContent =
             e.message;
     }
 }
 
+/*
+ * =========================================================
+ * TEAM FORM SUBMISSION
+ * =========================================================
+ *
+ * FIXED:
+ *
+ * - duplicate email check before API call
+ * - duplicate comparison is case-insensitive
+ * - duplicate field gets focused
+ * - backend message is displayed to user
+ * - API is called only when validation passes
+ */
 if ($('teamForm')) {
 
-    $('teamForm').addEventListener(
-        'submit',
-        async e => {
+    $('teamForm')
+        .addEventListener(
+            'submit',
+            async e => {
 
-            e.preventDefault();
+                e.preventDefault();
 
-            try {
+                const status =
+                    $('teamStatus');
 
-                const t =
-                    await api(
-                        '/api/teams',
-                        {
-                            method: 'POST',
+                if (status) {
+                    status.textContent =
+                        '';
+                }
 
-                            body:
-                                JSON.stringify(
-                                    teamPayload()
-                                )
-                        }
+                /*
+                 * Validate browser form first.
+                 */
+                if (
+                    !$('teamForm')
+                        .reportValidity()
+                ) {
+                    return;
+                }
+
+                /*
+                 * Collect all member email inputs.
+                 */
+                const emailInputs = [
+                    ...document
+                        .querySelectorAll(
+                            '#memberRows [data-member="email"]'
+                        )
+                ];
+
+                /*
+                 * Normalize:
+                 *
+                 * TEST@EMAIL.COM
+                 * test@email.com
+                 *
+                 * are considered the same.
+                 */
+                const emails =
+                    emailInputs.map(
+                        input =>
+                            input.value
+                                .trim()
+                                .toLowerCase()
                     );
 
-                tone();
+                /*
+                 * Detect duplicate member email.
+                 */
+                const duplicateEmail =
+                    emails.find(
+                        (
+                            email,
+                            index
+                        ) =>
+                            email &&
+                            emails.indexOf(
+                                email
+                            ) !==
+                            index
+                    );
 
-                $('teamStatus').textContent =
-                    `Squad locked: ${t.teamCode}`;
+                if (duplicateEmail) {
 
-                loadTeam('TEAM');
+                    if (status) {
+                        status.textContent =
+                            `This email address (${duplicateEmail}) is already added to the team.`;
+                    }
 
-            } catch (x) {
+                    /*
+                     * Focus second occurrence.
+                     */
+                    const duplicates =
+                        emailInputs.filter(
+                            input =>
+                                input.value
+                                    .trim()
+                                    .toLowerCase() ===
+                                duplicateEmail
+                        );
 
-                $('teamStatus').textContent =
-                    x.message;
+                    if (
+                        duplicates.length >
+                        1
+                    ) {
+                        duplicates[
+                            1
+                        ].focus();
+                    }
+
+                    return;
+                }
+
+                /*
+                 * Validate DOB / age before sending.
+                 */
+                const memberCards = [
+                    ...document
+                        .querySelectorAll(
+                            '#memberRows .member-card'
+                        )
+                ];
+
+                for (
+                    const card of
+                    memberCards
+                ) {
+                    const dob =
+                        card.querySelector(
+                            '[data-member="dateOfBirth"]'
+                        ).value;
+
+                    const guardian =
+                        card.querySelector(
+                            '[data-member="guardianConsent"]'
+                        ).checked;
+
+                    const age =
+                        ageFromDob(dob);
+
+                    if (
+                        age < 10 ||
+                        age > 35
+                    ) {
+                        if (status) {
+                            status.textContent =
+                                'Every team member must be aged 10–35.';
+                        }
+
+                        card
+                            .querySelector(
+                                '[data-member="dateOfBirth"]'
+                            )
+                            .focus();
+
+                        return;
+                    }
+
+                    if (
+                        age < 18 &&
+                        !guardian
+                    ) {
+                        if (status) {
+                            status.textContent =
+                                'Guardian consent is required for every team member under 18.';
+                        }
+
+                        card
+                            .querySelector(
+                                '[data-member="guardianConsent"]'
+                            )
+                            .focus();
+
+                        return;
+                    }
+                }
+
+                try {
+
+                    if (status) {
+                        status.textContent =
+                            'Creating and locking your squad...';
+                    }
+
+                    const t =
+                        await api(
+                            '/api/teams',
+                            {
+                                method:
+                                    'POST',
+
+                                body:
+                                    JSON.stringify(
+                                        teamPayload()
+                                    )
+                            }
+                        );
+
+                    tone();
+
+                    if (status) {
+                        status.textContent =
+                            `Squad locked successfully: ${t.teamCode}`;
+                    }
+
+                    await loadTeam(
+                        'TEAM'
+                    );
+
+                } catch (x) {
+
+                    if (status) {
+                        status.textContent =
+                            x.message ||
+                            'Unable to create the team. Please check the member details and try again.';
+                    }
+                }
             }
-        }
-    );
+        );
 }
 
 if ($('addTeamMember')) {
 
-    $('addTeamMember').addEventListener(
-        'click',
-        () => {
+    $('addTeamMember')
+        .addEventListener(
+            'click',
+            () => {
 
-            const rows =
-                $('memberRows');
+                const rows =
+                    $('memberRows');
 
-            const current =
-                rows.querySelectorAll(
-                    '.member-card'
-                ).length;
+                const current =
+                    rows
+                        .querySelectorAll(
+                            '.member-card'
+                        )
+                        .length;
 
-            if (
-                current >=
-                MAX_ADDITIONAL_MEMBERS
-            ) {
-                return;
+                if (
+                    current >=
+                    MAX_ADDITIONAL_MEMBERS
+                ) {
+                    return;
+                }
+
+                rows.insertAdjacentHTML(
+                    'beforeend',
+                    memberRow(
+                        current + 2
+                    )
+                );
+
+                syncTeamMemberControls();
+
+                rows
+                    .lastElementChild
+                    .querySelector(
+                        '[data-member="fullName"]'
+                    )
+                    .focus();
             }
-
-            rows.insertAdjacentHTML(
-                'beforeend',
-                memberRow(current + 2)
-            );
-
-            syncTeamMemberControls();
-
-            rows.lastElementChild
-                .querySelector(
-                    '[data-member="fullName"]'
-                )
-                .focus();
-        }
-    );
+        );
 }
 
 if ($('memberRows')) {
 
-    $('memberRows').addEventListener(
-        'click',
-        event => {
+    $('memberRows')
+        .addEventListener(
+            'click',
+            event => {
 
-            const remove =
-                event.target.closest(
-                    '[data-remove-member]'
-                );
+                const remove =
+                    event.target
+                        .closest(
+                            '[data-remove-member]'
+                        );
 
-            if (!remove) return;
+                if (!remove) {
+                    return;
+                }
 
-            const rows =
-                $('memberRows');
+                const rows =
+                    $('memberRows');
 
-            if (
-                rows.querySelectorAll(
-                    '.member-card'
-                ).length <=
-                MIN_ADDITIONAL_MEMBERS
-            ) {
-                return;
+                if (
+                    rows
+                        .querySelectorAll(
+                            '.member-card'
+                        )
+                        .length <=
+                    MIN_ADDITIONAL_MEMBERS
+                ) {
+                    return;
+                }
+
+                remove
+                    .closest(
+                        '.member-card'
+                    )
+                    .remove();
+
+                syncTeamMemberControls();
             }
-
-            remove
-                .closest('.member-card')
-                .remove();
-
-            syncTeamMemberControls();
-        }
-    );
+        );
 }
-
 
 /* =========================================================
    POC
@@ -937,14 +1342,18 @@ const pocFields = [
 
 async function loadPoc() {
 
-    if (!$('pocForm')) return;
+    if (!$('pocForm')) {
+        return;
+    }
 
     try {
-
         const p =
-            await api('/api/submissions');
+            await api(
+                '/api/submissions'
+            );
 
-        $('pocState').textContent =
+        $('pocState')
+            .textContent =
             p.status;
 
         const submitted =
@@ -965,29 +1374,37 @@ async function loadPoc() {
 
         if (submitted) {
 
-            $('pocForm').reset();
+            $('pocForm')
+                .reset();
 
-            pocFields.forEach(k => {
-                $(k).value = '';
-            });
+            pocFields
+                .forEach(k => {
+                    $(k).value =
+                        '';
+                });
 
             [
-                ...$('pocForm').elements
+                ...$('pocForm')
+                    .elements
             ].forEach(x => {
-                x.disabled = true;
+                x.disabled =
+                    true;
             });
 
         } else if (p.exists) {
 
-            pocFields.forEach(k => {
-                $(k).value =
-                    p[k] || '';
-            });
+            pocFields
+                .forEach(k => {
+                    $(k).value =
+                        p[k] ||
+                        '';
+                });
         }
 
     } catch (e) {
 
-        $('pocStatus').textContent =
+        $('pocStatus')
+            .textContent =
             e.message;
     }
 }
@@ -995,155 +1412,175 @@ async function loadPoc() {
 function pocPayload() {
 
     return Object.fromEntries(
-        pocFields.map(k => [
-            k,
-            $(k).value.trim()
-        ])
+        pocFields
+            .map(k => [
+                k,
+                $(k)
+                    .value
+                    .trim()
+            ])
     );
 }
 
 if ($('pocForm')) {
 
-    $('pocForm').addEventListener(
-        'submit',
-        async e => {
+    $('pocForm')
+        .addEventListener(
+            'submit',
+            async e => {
 
-            e.preventDefault();
+                e.preventDefault();
 
-            try {
+                try {
 
-                const p =
-                    await api(
-                        '/api/submissions',
-                        {
-                            method: 'PUT',
+                    const p =
+                        await api(
+                            '/api/submissions',
+                            {
+                                method:
+                                    'PUT',
 
-                            body:
-                                JSON.stringify(
-                                    pocPayload()
-                                )
-                        }
-                    );
+                                body:
+                                    JSON.stringify(
+                                        pocPayload()
+                                    )
+                            }
+                        );
 
-                tone();
+                    tone();
 
-                $('pocState').textContent =
-                    p.status;
+                    $('pocState')
+                        .textContent =
+                        p.status;
 
-                $('pocStatus').textContent =
-                    'Draft saved securely.';
+                    $('pocStatus')
+                        .textContent =
+                        'Draft saved securely.';
 
-            } catch (x) {
+                } catch (x) {
 
-                $('pocStatus').textContent =
-                    x.message;
+                    $('pocStatus')
+                        .textContent =
+                        x.message;
+                }
             }
-        }
-    );
+        );
 }
 
 if ($('submitPoc')) {
 
-    $('submitPoc').addEventListener(
-        'click',
-        async () => {
+    $('submitPoc')
+        .addEventListener(
+            'click',
+            async () => {
 
-            const form =
-                $('pocForm');
+                const form =
+                    $('pocForm');
 
-            if (!form.reportValidity()) {
+                if (
+                    !form
+                        .reportValidity()
+                ) {
 
-                form.querySelector(
-                    ':invalid'
-                )?.focus();
+                    form
+                        .querySelector(
+                            ':invalid'
+                        )
+                        ?.focus();
 
-                $('pocStatus').textContent =
-                    'Complete all required POC fields before final submission.';
+                    $('pocStatus')
+                        .textContent =
+                        'Complete all required POC fields before final submission.';
 
-                return;
+                    return;
+                }
+
+                if (
+                    !$('repositoryUrl')
+                        .value
+                        .trim() ||
+                    !$('demoUrl')
+                        .value
+                        .trim()
+                ) {
+
+                    $('pocStatus')
+                        .textContent =
+                        'Repository URL and Demo URL are required for final submission.';
+
+                    return;
+                }
+
+                if (
+                    !confirm(
+                        'Final submission cannot be edited. Continue?'
+                    )
+                ) {
+                    return;
+                }
+
+                const button =
+                    $('submitPoc');
+
+                button.disabled =
+                    true;
+
+                $('pocStatus')
+                    .textContent =
+                    'Submitting POC securely…';
+
+                try {
+
+                    const result =
+                        await api(
+                            '/api/submissions/submit',
+                            {
+                                method:
+                                    'POST',
+
+                                body:
+                                    JSON.stringify(
+                                        pocPayload()
+                                    )
+                            }
+                        );
+
+                    tone();
+
+                    $('pocState')
+                        .textContent =
+                        result.status;
+
+                    $('pocStatus')
+                        .textContent =
+                        `POC submitted successfully at ${new Date(
+                            result.submittedAt
+                        ).toLocaleString()}.`;
+
+                    form.reset();
+
+                    pocFields
+                        .forEach(k => {
+                            $(k).value =
+                                '';
+                        });
+
+                    await loadPoc();
+
+                    await refreshFlow();
+
+                } catch (x) {
+
+                    button.disabled =
+                        false;
+
+                    $('pocStatus')
+                        .textContent =
+                        x.message;
+                }
             }
-
-            if (
-                !$('repositoryUrl')
-                    .value
-                    .trim() ||
-                !$('demoUrl')
-                    .value
-                    .trim()
-            ) {
-
-                $('pocStatus').textContent =
-                    'Repository URL and Demo URL are required for final submission.';
-
-                return;
-            }
-
-            if (
-                !confirm(
-                    'Final submission cannot be edited. Continue?'
-                )
-            ) {
-                return;
-            }
-
-            const button =
-                $('submitPoc');
-
-            button.disabled = true;
-
-            $('pocStatus').textContent =
-                'Submitting POC securely…';
-
-            try {
-
-                const result =
-                    await api(
-                        '/api/submissions/submit',
-                        {
-                            method: 'POST',
-
-                            body:
-                                JSON.stringify(
-                                    pocPayload()
-                                )
-                        }
-                    );
-
-                tone();
-
-                $('pocState').textContent =
-                    result.status;
-
-                /*
-                 * IMPORTANT:
-                 * POC submission NO LONGER unlocks payment.
-                 */
-                $('pocStatus').textContent =
-                    `POC submitted successfully at ${new Date(
-                        result.submittedAt
-                    ).toLocaleString()}.`;
-
-                form.reset();
-
-                pocFields.forEach(k => {
-                    $(k).value = '';
-                });
-
-                await loadPoc();
-
-                await refreshFlow();
-
-            } catch (x) {
-
-                button.disabled = false;
-
-                $('pocStatus').textContent =
-                    x.message;
-            }
-        }
-    );
+        );
 }
-
 
 /* =========================================================
    PARTICIPANT FLOW
@@ -1152,7 +1589,9 @@ if ($('submitPoc')) {
 async function refreshFlow() {
 
     const p =
-        await api('/api/auth/me');
+        await api(
+            '/api/auth/me'
+        );
 
     const labels = {
 
@@ -1206,7 +1645,9 @@ async function refreshFlow() {
 
     if (registrationStatus) {
         registrationStatus.textContent =
-            labels[p.registrationStatus] ||
+            labels[
+                p.registrationStatus
+            ] ||
             p.registrationStatus ||
             'Pending';
     }
@@ -1222,7 +1663,7 @@ async function refreshFlow() {
             'DOB_VERIFIED'
                 ? 'ELIGIBLE'
                 : p.verificationStatus ||
-                  'Not checked';
+                'Not checked';
     }
 
     const entryType =
@@ -1236,41 +1677,38 @@ async function refreshFlow() {
             '—';
     }
 
-
     /* AGE */
 
     const ageOk =
         p.verificationStatus ===
         'DOB_VERIFIED';
 
-    $('ageState').textContent =
+    $('ageState')
+        .textContent =
         ageOk
             ? 'ELIGIBLE ✓'
             : p.verificationStatus;
-
 
     /* PRICE */
 
     if ($('dashboardPrice')) {
 
-        $('dashboardPrice').textContent =
+        $('dashboardPrice')
+            .textContent =
             isIndia(p.country)
                 ? `Your India entry: ${
-                    p.participationType === 'TEAM'
+                    p.participationType ===
+                    'TEAM'
                         ? '₹19.93/team'
                         : '₹14.01/individual'
-                  } • INR payment`
+                } • INR payment`
                 : `Your international entry: ${
-                    p.participationType === 'TEAM'
+                    p.participationType ===
+                    'TEAM'
                         ? '$5.80/team'
                         : '$2.70/individual'
-                  } • USD payment`;
+                } • USD payment`;
     }
-
-
-    /*
-     * FLOW STATES
-     */
 
     const guardianOk =
         !p.guardianRequired ||
@@ -1284,10 +1722,7 @@ async function refreshFlow() {
         p.registrationStatus ===
         'CONFIRMED';
 
-
-    /* =====================================================
-       GUARDIAN
-       ===================================================== */
+    /* GUARDIAN */
 
     const guardianSection =
         $('guardian');
@@ -1300,8 +1735,10 @@ async function refreshFlow() {
             '[data-step="guardian"]'
         );
 
-    guardianSection.hidden =
-        !p.guardianRequired;
+    if (guardianSection) {
+        guardianSection.hidden =
+            !p.guardianRequired;
+    }
 
     if (guardianNav) {
         guardianNav.hidden =
@@ -1319,46 +1756,50 @@ async function refreshFlow() {
                 : 'GUARDIAN';
     }
 
-    $('guardianState').textContent =
-        p.guardianReceived
-            ? 'VERIFIED'
-            : ageOk
-                ? 'ACTION REQUIRED'
-                : 'LOCKED';
+    if ($('guardianState')) {
+        $('guardianState')
+            .textContent =
+            p.guardianReceived
+                ? 'VERIFIED'
+                : ageOk
+                    ? 'ACTION REQUIRED'
+                    : 'LOCKED';
+    }
 
-    $('guardianMasked').textContent =
-        p.guardianEmailMasked ||
-        'the protected address';
+    if ($('guardianMasked')) {
+        $('guardianMasked')
+            .textContent =
+            p.guardianEmailMasked ||
+            'the protected address';
+    }
 
-    $('requestGuardian').disabled =
-        !ageOk ||
-        p.guardianReceived;
+    if ($('requestGuardian')) {
+        $('requestGuardian')
+            .disabled =
+            !ageOk ||
+            p.guardianReceived;
+    }
 
-    $('verifyGuardian').disabled =
-        !ageOk ||
-        p.guardianReceived;
+    if ($('verifyGuardian')) {
+        $('verifyGuardian')
+            .disabled =
+            !ageOk ||
+            p.guardianReceived;
+    }
 
-
-    /* =====================================================
-       PAYMENT
-       ===================================================== */
-
-    /*
-     * Payment is now BEFORE Team / POC.
-     *
-     * PENDING_PAYMENT = payment can be completed.
-     * CONFIRMED       = payment already completed.
-     */
+    /* PAYMENT */
 
     if ($('payNow')) {
-
-        $('payNow').disabled =
-            !paymentReady || active;
+        $('payNow')
+            .disabled =
+            !paymentReady ||
+            active;
     }
 
     if ($('paymentState')) {
 
-        $('paymentState').textContent =
+        $('paymentState')
+            .textContent =
             active
                 ? 'ACTIVE'
                 : paymentReady
@@ -1370,25 +1811,25 @@ async function refreshFlow() {
 
         if (active) {
 
-            $('paymentStatus').textContent =
+            $('paymentStatus')
+                .textContent =
                 'Payment confirmed. Registration is active.';
 
         } else if (paymentReady) {
 
-            $('paymentStatus').textContent =
+            $('paymentStatus')
+                .textContent =
                 'Complete your payment to activate your registration.';
 
         } else {
 
-            $('paymentStatus').textContent =
+            $('paymentStatus')
+                .textContent =
                 'Payment is not currently available for this registration.';
         }
     }
 
-
-    /* =====================================================
-       TOP FLOW STATUS
-       ===================================================== */
+    /* TOP FLOW STATUS */
 
     const ageStep =
         document.querySelector(
@@ -1402,7 +1843,6 @@ async function refreshFlow() {
                 : 'AGE';
     }
 
-
     const paymentStep =
         document.querySelector(
             '[data-step="payment"]'
@@ -1414,7 +1854,6 @@ async function refreshFlow() {
                 ? 'PAYMENT ✓'
                 : 'PAYMENT';
     }
-
 
     const activeStep =
         document.querySelector(
@@ -1428,10 +1867,8 @@ async function refreshFlow() {
                 : 'ACTIVE';
     }
 
-
     return p;
 }
-
 
 /* =========================================================
    PARTICIPANT HYDRATION
@@ -1448,7 +1885,9 @@ async function hydrateParticipant() {
 
     try {
 
-        await api('/api/auth/csrf');
+        await api(
+            '/api/auth/csrf'
+        );
 
         const p =
             await refreshFlow();
@@ -1460,6 +1899,7 @@ async function hydrateParticipant() {
         await loadPoc();
 
     } catch (e) {
+
         console.error(
             'Participant dashboard hydration failed:',
             e
@@ -1469,119 +1909,122 @@ async function hydrateParticipant() {
 
 hydrateParticipant();
 
-
 /* =========================================================
    GUARDIAN
    ========================================================= */
 
 if ($('requestGuardian')) {
 
-    $('requestGuardian').addEventListener(
-        'click',
-        async () => {
+    $('requestGuardian')
+        .addEventListener(
+            'click',
+            async () => {
 
-            try {
+                try {
 
-                const d =
-                    await api(
-                        '/api/guardian/request',
-                        {
-                            method: 'POST'
-                        }
-                    );
+                    const d =
+                        await api(
+                            '/api/guardian/request',
+                            {
+                                method:
+                                    'POST'
+                            }
+                        );
 
-                $('guardianStatus')
-                    .textContent =
-                    d.message;
+                    $('guardianStatus')
+                        .textContent =
+                        d.message;
 
-            } catch (e) {
+                } catch (e) {
 
-                $('guardianStatus')
-                    .textContent =
-                    e.message;
+                    $('guardianStatus')
+                        .textContent =
+                        e.message;
+                }
             }
-        }
-    );
+        );
 }
 
 if ($('verifyGuardian')) {
 
-    $('verifyGuardian').addEventListener(
-        'click',
-        async () => {
+    $('verifyGuardian')
+        .addEventListener(
+            'click',
+            async () => {
 
-            try {
+                try {
 
-                const d =
-                    await api(
-                        '/api/guardian/verify',
-                        {
-                            method: 'POST',
+                    const d =
+                        await api(
+                            '/api/guardian/verify',
+                            {
+                                method:
+                                    'POST',
 
-                            body:
-                                JSON.stringify({
+                                body:
+                                    JSON.stringify(
+                                        {
+                                            otp:
+                                                $('guardianOtp')
+                                                    .value,
 
-                                    otp:
-                                        $('guardianOtp')
-                                            .value,
+                                            guardianAuthorityConfirmed:
+                                                $('guardianAuthority')
+                                                    .checked,
 
-                                    guardianAuthorityConfirmed:
-                                        $('guardianAuthority')
-                                            .checked,
+                                            participantDetailsConfirmed:
+                                                $('guardianDetails')
+                                                    .checked,
 
-                                    participantDetailsConfirmed:
-                                        $('guardianDetails')
-                                            .checked,
+                                            participationApproved:
+                                                $('guardianParticipation')
+                                                    .checked,
 
-                                    participationApproved:
-                                        $('guardianParticipation')
-                                            .checked,
+                                            termsAccepted:
+                                                $('guardianTerms')
+                                                    .checked,
 
-                                    termsAccepted:
-                                        $('guardianTerms')
-                                            .checked,
+                                            privacyAccepted:
+                                                $('guardianPrivacy')
+                                                    .checked,
 
-                                    privacyAccepted:
-                                        $('guardianPrivacy')
-                                            .checked,
+                                            childSafetyAccepted:
+                                                $('guardianSafety')
+                                                    .checked,
 
-                                    childSafetyAccepted:
-                                        $('guardianSafety')
-                                            .checked,
+                                            rulesAccepted:
+                                                $('guardianRules')
+                                                    .checked,
 
-                                    rulesAccepted:
-                                        $('guardianRules')
-                                            .checked,
+                                            refundAccepted:
+                                                $('guardianRefund')
+                                                    .checked,
 
-                                    refundAccepted:
-                                        $('guardianRefund')
-                                            .checked,
+                                            dataProcessingAccepted:
+                                                $('guardianData')
+                                                    .checked
+                                        }
+                                    )
+                            }
+                        );
 
-                                    dataProcessingAccepted:
-                                        $('guardianData')
-                                            .checked
-                                })
-                        }
-                    );
+                    tone();
 
-                tone();
+                    $('guardianStatus')
+                        .textContent =
+                        d.message;
 
-                $('guardianStatus')
-                    .textContent =
-                    d.message;
+                    await refreshFlow();
 
-                await refreshFlow();
+                } catch (e) {
 
-            } catch (e) {
-
-                $('guardianStatus')
-                    .textContent =
-                    e.message;
+                    $('guardianStatus')
+                        .textContent =
+                        e.message;
+                }
             }
-        }
-    );
+        );
 }
-
 
 /* =========================================================
    PAYMENT
@@ -1596,7 +2039,11 @@ async function pollPayment() {
     ) {
 
         await new Promise(
-            r => setTimeout(r, 2000)
+            r =>
+                setTimeout(
+                    r,
+                    2000
+                )
         );
 
         const s =
@@ -1612,87 +2059,94 @@ async function pollPayment() {
         }
     }
 
-    $('paymentStatus').textContent =
+    $('paymentStatus')
+        .textContent =
         'Payment is still awaiting secure webhook confirmation. Refresh shortly.';
 }
 
 if ($('payNow')) {
 
-    $('payNow').addEventListener(
-        'click',
-        async () => {
+    $('payNow')
+        .addEventListener(
+            'click',
+            async () => {
 
-            try {
+                try {
 
-                const d =
-                    await api(
-                        '/api/payments/create-order',
-                        {
-                            method: 'POST'
-                        }
-                    );
+                    const d =
+                        await api(
+                            '/api/payments/create-order',
+                            {
+                                method:
+                                    'POST'
+                            }
+                        );
 
-                if (!window.Razorpay) {
-                    throw new Error(
-                        'Checkout library did not load'
-                    );
-                }
-
-                new Razorpay({
-
-                    key:
-                        d.keyId,
-
-                    amount:
-                        d.amount,
-
-                    currency:
-                        d.currency,
-
-                    name:
-                        'MiTRAA Hackathons 2026',
-
-                    description:
-                        `Entry ${d.registrationId}`,
-
-                    order_id:
-                        d.orderId,
-
-                    handler: () => {
-
-                        $('paymentStatus')
-                            .textContent =
-                            'Payment received. Waiting for signed server confirmation…';
-
-                        pollPayment();
-                    },
-
-                    modal: {
-
-                        ondismiss: () => {
-
-                            $('paymentStatus')
-                                .textContent =
-                                'Payment window closed. Registration is not yet active.';
-                        }
-                    },
-
-                    theme: {
-                        color: '#7b2cff'
+                    if (
+                        !window.Razorpay
+                    ) {
+                        throw new Error(
+                            'Checkout library did not load'
+                        );
                     }
 
-                }).open();
+                    new Razorpay({
 
-            } catch (e) {
+                        key:
+                            d.keyId,
 
-                $('paymentStatus')
-                    .textContent =
-                    e.message;
+                        amount:
+                            d.amount,
+
+                        currency:
+                            d.currency,
+
+                        name:
+                            'MiTRAA Hackathons 2026',
+
+                        description:
+                            `Entry ${d.registrationId}`,
+
+                        order_id:
+                            d.orderId,
+
+                        handler:
+                            () => {
+
+                                $('paymentStatus')
+                                    .textContent =
+                                    'Payment received. Waiting for signed server confirmation…';
+
+                                pollPayment();
+                            },
+
+                        modal: {
+
+                            ondismiss:
+                                () => {
+
+                                    $('paymentStatus')
+                                        .textContent =
+                                        'Payment window closed. Registration is not yet active.';
+                                }
+                        },
+
+                        theme: {
+                            color:
+                                '#7b2cff'
+                        }
+
+                    }).open();
+
+                } catch (e) {
+
+                    $('paymentStatus')
+                        .textContent =
+                        e.message;
+                }
             }
-        }
-    );
+        );
 }
-
 
 /* =========================================================
    ADMIN PARTICIPANTS
@@ -1700,7 +2154,11 @@ if ($('payNow')) {
 
 async function loadParticipants() {
 
-    if (!$('participantRows')) return;
+    if (
+        !$('participantRows')
+    ) {
+        return;
+    }
 
     try {
 
@@ -1712,43 +2170,34 @@ async function loadParticipants() {
         $('participantRows')
             .innerHTML =
             a.length
-
-                ? a.map(p => `
+                ? a.map(
+                    p => `
 <tr>
-
-<td>${p.registrationId}</td>
-
-<td>${p.name}</td>
-
-<td>${p.country}</td>
-
-<td>${p.type}</td>
-
-<td>${p.verification}</td>
-
-<td>${p.status}</td>
-
-</tr>
-`).join('')
-
+    <td>${p.registrationId}</td>
+    <td>${p.name}</td>
+    <td>${p.country}</td>
+    <td>${p.type}</td>
+    <td>${p.verification}</td>
+    <td>${p.status}</td>
+</tr>`
+                ).join('')
                 : `
 <tr>
-<td colspan="6">
-    No registrations yet.
-</td>
-</tr>
-`;
+    <td colspan="6">
+        No registrations yet.
+    </td>
+</tr>`;
 
     } catch (e) {
 
         $('participantRows')
-            .innerHTML = `
+            .innerHTML =
+            `
 <tr>
-<td colspan="6">
-    ${e.message}
-</td>
-</tr>
-`;
+    <td colspan="6">
+        ${e.message}
+    </td>
+</tr>`;
     }
 }
 
@@ -1768,18 +2217,23 @@ async function hydrateAdmin() {
                 '/api/admin/metrics'
             );
 
-        Object.entries(m)
-            .forEach(([k, v]) => {
+        Object
+            .entries(m)
+            .forEach(
+                ([k, v]) => {
 
-                const e =
-                    document.querySelector(
-                        `[data-metric="${k}"]`
-                    );
+                    const e =
+                        document
+                            .querySelector(
+                                `[data-metric="${k}"]`
+                            );
 
-                if (e) {
-                    e.textContent = v;
+                    if (e) {
+                        e.textContent =
+                            v;
+                    }
                 }
-            });
+            );
 
     } catch {}
 
@@ -1797,7 +2251,6 @@ if ($('refreshParticipants')) {
         );
 }
 
-
 /* =========================================================
    DIAL CODE
    ========================================================= */
@@ -1811,22 +2264,25 @@ function syncDialCode() {
         return;
     }
 
-    $('dialCode').textContent =
+    $('dialCode')
+        .textContent =
         $('country')
             .selectedOptions[0]
-            ?.dataset.code || '';
+            ?.dataset
+            .code ||
+        '';
 }
 
 if ($('country')) {
 
-    $('country').addEventListener(
-        'change',
-        syncDialCode
-    );
+    $('country')
+        .addEventListener(
+            'change',
+            syncDialCode
+        );
 
     syncDialCode();
 }
-
 
 /* =========================================================
    DOMAIN / ARENA
@@ -1838,36 +2294,39 @@ if ($('domain')) {
         new URLSearchParams(
             location.search
         ).get('arena') ||
-        sessionStorage.getItem(
-            'selectedArena'
-        );
+        sessionStorage
+            .getItem(
+                'selectedArena'
+            );
 
     if (selectedArena) {
 
-        const option =
-            [
-                ...$('domain').options
-            ].find(
-                item =>
-                    item.value ===
-                    selectedArena ||
-                    item.textContent.trim() ===
-                    selectedArena
-            );
+        const option = [
+            ...$('domain')
+                .options
+        ].find(
+            item =>
+                item.value ===
+                selectedArena ||
+                item.textContent
+                    .trim() ===
+                selectedArena
+        );
 
         if (option) {
 
-            $('domain').value =
+            $('domain')
+                .value =
                 option.value;
 
-            sessionStorage.setItem(
-                'selectedArena',
-                option.value
-            );
+            sessionStorage
+                .setItem(
+                    'selectedArena',
+                    option.value
+                );
         }
     }
 }
-
 
 /* =========================================================
    EMAIL VERIFICATION
@@ -1875,10 +2334,12 @@ if ($('domain')) {
 
 if ($('verifyEmail')) {
 
-    $('verifyEmail').value =
-        sessionStorage.getItem(
-            'pendingVerificationEmail'
-        ) ||
+    $('verifyEmail')
+        .value =
+        sessionStorage
+            .getItem(
+                'pendingVerificationEmail'
+            ) ||
         new URLSearchParams(
             location.search
         ).get('email') ||
@@ -1900,19 +2361,21 @@ if ($('verifyEmailForm')) {
                         await api(
                             '/api/auth/verify-email',
                             {
-                                method: 'POST',
+                                method:
+                                    'POST',
 
                                 body:
-                                    JSON.stringify({
+                                    JSON.stringify(
+                                        {
+                                            email:
+                                                $('verifyEmail')
+                                                    .value,
 
-                                        email:
-                                            $('verifyEmail')
-                                                .value,
-
-                                        otp:
-                                            $('verifyOtp')
-                                                .value
-                                    })
+                                            otp:
+                                                $('verifyOtp')
+                                                    .value
+                                        }
+                                    )
                             }
                         );
 
@@ -1922,9 +2385,10 @@ if ($('verifyEmailForm')) {
                         .textContent =
                         d.message;
 
-                    sessionStorage.removeItem(
-                        'pendingVerificationEmail'
-                    );
+                    sessionStorage
+                        .removeItem(
+                            'pendingVerificationEmail'
+                        );
 
                     setTimeout(
                         () => {
@@ -1945,48 +2409,50 @@ if ($('verifyEmailForm')) {
         );
 }
 
-
 /* =========================================================
    RESEND OTP
    ========================================================= */
 
 if ($('resendOtp')) {
 
-    $('resendOtp').addEventListener(
-        'click',
-        async () => {
+    $('resendOtp')
+        .addEventListener(
+            'click',
+            async () => {
 
-            try {
+                try {
 
-                const d =
-                    await api(
-                        '/api/auth/resend-otp',
-                        {
-                            method: 'POST',
+                    const d =
+                        await api(
+                            '/api/auth/resend-otp',
+                            {
+                                method:
+                                    'POST',
 
-                            body:
-                                JSON.stringify({
-                                    email:
-                                        $('verifyEmail')
-                                            .value
-                                })
-                        }
-                    );
+                                body:
+                                    JSON.stringify(
+                                        {
+                                            email:
+                                                $('verifyEmail')
+                                                    .value
+                                        }
+                                    )
+                            }
+                        );
 
-                $('verifyEmailStatus')
-                    .textContent =
-                    d.message;
+                    $('verifyEmailStatus')
+                        .textContent =
+                        d.message;
 
-            } catch (x) {
+                } catch (x) {
 
-                $('verifyEmailStatus')
-                    .textContent =
-                    x.message;
+                    $('verifyEmailStatus')
+                        .textContent =
+                        x.message;
+                }
             }
-        }
-    );
+        );
 }
-
 
 /* =========================================================
    FORGOT PASSWORD
@@ -1994,46 +2460,50 @@ if ($('resendOtp')) {
 
 if ($('forgotForm')) {
 
-    $('forgotForm').addEventListener(
-        'submit',
-        async e => {
+    $('forgotForm')
+        .addEventListener(
+            'submit',
+            async e => {
 
-            e.preventDefault();
+                e.preventDefault();
 
-            try {
+                try {
 
-                const d =
-                    await api(
-                        '/api/auth/forgot-password',
-                        {
-                            method: 'POST',
+                    const d =
+                        await api(
+                            '/api/auth/forgot-password',
+                            {
+                                method:
+                                    'POST',
 
-                            body:
-                                JSON.stringify({
-                                    email:
-                                        $('forgotEmail')
-                                            .value
-                                })
-                        }
-                    );
+                                body:
+                                    JSON.stringify(
+                                        {
+                                            email:
+                                                $('forgotEmail')
+                                                    .value
+                                        }
+                                    )
+                            }
+                        );
 
-                $('forgotStatus')
-                    .textContent =
-                    d.message;
+                    $('forgotStatus')
+                        .textContent =
+                        d.message;
 
-                $('resetForm').hidden =
-                    false;
+                    $('resetForm')
+                        .hidden =
+                        false;
 
-            } catch (x) {
+                } catch (x) {
 
-                $('forgotStatus')
-                    .textContent =
-                    x.message;
+                    $('forgotStatus')
+                        .textContent =
+                        x.message;
+                }
             }
-        }
-    );
+        );
 }
-
 
 /* =========================================================
    RESET PASSWORD
@@ -2041,91 +2511,94 @@ if ($('forgotForm')) {
 
 if ($('resetForm')) {
 
-    $('resetForm').addEventListener(
-        'submit',
-        async e => {
+    $('resetForm')
+        .addEventListener(
+            'submit',
+            async e => {
 
-            e.preventDefault();
+                e.preventDefault();
 
-            const password =
-                $('newPassword').value;
+                const password =
+                    $('newPassword')
+                        .value;
 
-            if (
-                password !==
-                password.trim() ||
-                $('confirmNewPassword').value !==
-                $('confirmNewPassword')
-                    .value
-                    .trim()
-            ) {
+                if (
+                    password !==
+                    password.trim() ||
+                    $('confirmNewPassword')
+                        .value !==
+                    $('confirmNewPassword')
+                        .value
+                        .trim()
+                ) {
+                    $('resetStatus')
+                        .textContent =
+                        'Password must not start or end with a space.';
 
-                $('resetStatus')
-                    .textContent =
-                    'Password must not start or end with a space.';
+                    return;
+                }
 
-                return;
-            }
+                if (
+                    password !==
+                    $('confirmNewPassword')
+                        .value
+                ) {
+                    $('resetStatus')
+                        .textContent =
+                        'Passwords do not match.';
 
-            if (
-                password !==
-                $('confirmNewPassword').value
-            ) {
+                    return;
+                }
 
-                $('resetStatus')
-                    .textContent =
-                    'Passwords do not match.';
+                try {
 
-                return;
-            }
+                    const d =
+                        await api(
+                            '/api/auth/reset-password',
+                            {
+                                method:
+                                    'POST',
 
-            try {
+                                body:
+                                    JSON.stringify(
+                                        {
+                                            email:
+                                                $('forgotEmail')
+                                                    .value,
 
-                const d =
-                    await api(
-                        '/api/auth/reset-password',
-                        {
-                            method: 'POST',
+                                            otp:
+                                                $('resetOtp')
+                                                    .value,
 
-                            body:
-                                JSON.stringify({
+                                            password
+                                        }
+                                    )
+                            }
+                        );
 
-                                    email:
-                                        $('forgotEmail')
-                                            .value,
+                    tone();
 
-                                    otp:
-                                        $('resetOtp')
-                                            .value,
+                    $('resetStatus')
+                        .textContent =
+                        d.message;
 
-                                    password
-                                })
-                        }
+                    setTimeout(
+                        () => {
+                            location.href =
+                                '/login';
+                        },
+                        1000
                     );
 
-                tone();
+                } catch (x) {
 
-                $('resetStatus')
-                    .textContent =
-                    d.message;
-
-                setTimeout(
-                    () => {
-                        location.href =
-                            '/login';
-                    },
-                    1000
-                );
-
-            } catch (x) {
-
-                $('resetStatus')
-                    .textContent =
-                    x.message;
+                    $('resetStatus')
+                        .textContent =
+                        x.message;
+                }
             }
-        }
-    );
+        );
 }
-
 
 /* =========================================================
    ADMIN USERS
@@ -2136,17 +2609,25 @@ let adminUsers = [];
 function esc(v) {
 
     const d =
-        document.createElement('div');
+        document
+            .createElement(
+                'div'
+            );
 
     d.textContent =
-        v ?? '';
+        v ??
+        '';
 
     return d.innerHTML;
 }
 
 async function loadAdminUsers() {
 
-    if (!$('userRows')) return;
+    if (
+        !$('userRows')
+    ) {
+        return;
+    }
 
     try {
 
@@ -2158,7 +2639,8 @@ async function loadAdminUsers() {
         $('userRows')
             .innerHTML =
             adminUsers
-                .map(u => `
+                .map(
+                    u => `
 <tr>
 
 <td>${u.id}</td>
@@ -2174,15 +2656,19 @@ async function loadAdminUsers() {
 <td>${u.role}</td>
 
 <td>
-    ${u.emailVerified
-        ? 'Verified'
-        : 'Pending'}
+    ${
+        u.emailVerified
+            ? 'Verified'
+            : 'Pending'
+    }
 </td>
 
 <td>
-    ${u.enabled
-        ? 'Active'
-        : 'Disabled'}
+    ${
+        u.enabled
+            ? 'Active'
+            : 'Disabled'
+    }
 </td>
 
 <td>
@@ -2201,32 +2687,28 @@ async function loadAdminUsers() {
 
 </td>
 
-</tr>
-`)
-                .join('')
-
-            ||
+</tr>`
+                )
+                .join('') ||
             `
 <tr>
 <td colspan="6">
     No users.
 </td>
-</tr>
-`;
+</tr>`;
 
     } catch (e) {
 
         $('userRows')
-            .innerHTML = `
+            .innerHTML =
+            `
 <tr>
 <td colspan="6">
     ${esc(e.message)}
 </td>
-</tr>
-`;
+</tr>`;
     }
 }
-
 
 /* =========================================================
    ADMIN PAYMENTS
@@ -2234,7 +2716,11 @@ async function loadAdminUsers() {
 
 async function loadAdminPayments() {
 
-    if (!$('paymentRows')) return;
+    if (
+        !$('paymentRows')
+    ) {
+        return;
+    }
 
     try {
 
@@ -2246,7 +2732,8 @@ async function loadAdminPayments() {
         $('paymentRows')
             .innerHTML =
             rows
-                .map(p => `
+                .map(
+                    p => `
 <tr>
 
 <td>
@@ -2259,7 +2746,9 @@ async function loadAdminPayments() {
 
 <td>
     ${p.currency}
-    ${Number(p.amount).toFixed(2)}
+    ${Number(
+        p.amount
+    ).toFixed(2)}
 </td>
 
 <td>
@@ -2271,7 +2760,10 @@ async function loadAdminPayments() {
 </td>
 
 <td>
-    ${esc(p.paymentId || '—')}
+    ${esc(
+        p.paymentId ||
+        '—'
+    )}
 </td>
 
 <td>
@@ -2280,29 +2772,26 @@ async function loadAdminPayments() {
     ).toLocaleString()}
 </td>
 
-</tr>
-`)
-                .join('')
-
-            ||
+</tr>`
+                )
+                .join('') ||
             `
 <tr>
 <td colspan="6">
     No payment records.
 </td>
-</tr>
-`;
+</tr>`;
 
     } catch (e) {
 
         $('paymentRows')
-            .innerHTML = `
+            .innerHTML =
+            `
 <tr>
 <td colspan="6">
     ${esc(e.message)}
 </td>
-</tr>
-`;
+</tr>`;
     }
 }
 
@@ -2310,11 +2799,9 @@ if (
     document.body.dataset
         .adminDashboard
 ) {
-
     loadAdminUsers();
     loadAdminPayments();
 }
-
 
 /* =========================================================
    ADMIN USER ACTIONS
@@ -2322,79 +2809,96 @@ if (
 
 if ($('userRows')) {
 
-    $('userRows').addEventListener(
-        'click',
-        async e => {
+    $('userRows')
+        .addEventListener(
+            'click',
+            async e => {
 
-            const edit =
-                e.target.dataset.editUser;
+                const edit =
+                    e.target.dataset
+                        .editUser;
 
-            const del =
-                e.target.dataset.deleteUser;
+                const del =
+                    e.target.dataset
+                        .deleteUser;
 
-            if (edit) {
+                if (edit) {
 
-                const u =
-                    adminUsers.find(
-                        x =>
-                            String(x.id) ===
-                            edit
-                    );
+                    const u =
+                        adminUsers.find(
+                            x =>
+                                String(
+                                    x.id
+                                ) ===
+                                edit
+                        );
 
-                if (!u) return;
+                    if (!u) {
+                        return;
+                    }
 
-                $('userId').value =
-                    u.id;
+                    $('userId')
+                        .value =
+                        u.id;
 
-                $('userName').value =
-                    u.fullName;
+                    $('userName')
+                        .value =
+                        u.fullName;
 
-                $('userEmail').value =
-                    u.email;
+                    $('userEmail')
+                        .value =
+                        u.email;
 
-                $('userRole').value =
-                    u.role;
+                    $('userRole')
+                        .value =
+                        u.role;
 
-                $('userEnabled').checked =
-                    u.enabled;
+                    $('userEnabled')
+                        .checked =
+                        u.enabled;
 
-                $('userVerified').checked =
-                    u.emailVerified;
+                    $('userVerified')
+                        .checked =
+                        u.emailVerified;
 
-                $('userPassword').value =
-                    '';
+                    $('userPassword')
+                        .value =
+                        '';
 
-                $('userDialog').showModal();
-            }
+                    $('userDialog')
+                        .showModal();
+                }
 
-            if (
-                del &&
-                confirm(
-                    'Deactivate this user? Their audit and payment records will be retained.'
-                )
-            ) {
+                if (
+                    del &&
+                    confirm(
+                        'Deactivate this user? Their audit and payment records will be retained.'
+                    )
+                ) {
 
-                try {
+                    try {
 
-                    await api(
-                        '/api/admin/users/' +
-                        del,
-                        {
-                            method: 'DELETE'
-                        }
-                    );
+                        await api(
+                            '/api/admin/users/' +
+                            del,
+                            {
+                                method:
+                                    'DELETE'
+                            }
+                        );
 
-                    loadAdminUsers();
+                        loadAdminUsers();
 
-                } catch (x) {
+                    } catch (x) {
 
-                    alert(x.message);
+                        alert(
+                            x.message
+                        );
+                    }
                 }
             }
-        }
-    );
+        );
 }
-
 
 /* =========================================================
    ADD ADMIN USER
@@ -2402,26 +2906,31 @@ if ($('userRows')) {
 
 if ($('addUser')) {
 
-    $('addUser').addEventListener(
-        'click',
-        () => {
+    $('addUser')
+        .addEventListener(
+            'click',
+            () => {
 
-            $('userForm').reset();
+                $('userForm')
+                    .reset();
 
-            $('userId').value =
-                '';
+                $('userId')
+                    .value =
+                    '';
 
-            $('userEnabled').checked =
-                true;
+                $('userEnabled')
+                    .checked =
+                    true;
 
-            $('userVerified').checked =
-                true;
+                $('userVerified')
+                    .checked =
+                    true;
 
-            $('userDialog').showModal();
-        }
-    );
+                $('userDialog')
+                    .showModal();
+            }
+        );
 }
-
 
 /* =========================================================
    CANCEL ADMIN USER
@@ -2429,14 +2938,16 @@ if ($('addUser')) {
 
 if ($('cancelUser')) {
 
-    $('cancelUser').addEventListener(
-        'click',
-        () => {
-            $('userDialog').close();
-        }
-    );
-}
+    $('cancelUser')
+        .addEventListener(
+            'click',
+            () => {
 
+                $('userDialog')
+                    .close();
+            }
+        );
+}
 
 /* =========================================================
    ADMIN USER FORM
@@ -2444,73 +2955,87 @@ if ($('cancelUser')) {
 
 if ($('userForm')) {
 
-    $('userForm').addEventListener(
-        'submit',
-        async e => {
+    $('userForm')
+        .addEventListener(
+            'submit',
+            async e => {
 
-            e.preventDefault();
+                e.preventDefault();
 
-            const id =
-                $('userId').value;
-
-            const body = {
-
-                fullName:
-                    $('userName').value,
-
-                email:
-                    $('userEmail').value,
-
-                role:
-                    $('userRole').value,
-
-                enabled:
-                    $('userEnabled').checked,
-
-                emailVerified:
-                    $('userVerified').checked
-            };
-
-            if (id) {
-
-                body.newPassword =
-                    $('userPassword')
-                        .value ||
-                    null;
-
-            } else {
-
-                body.password =
-                    $('userPassword')
+                const id =
+                    $('userId')
                         .value;
-            }
 
-            try {
+                const body = {
 
-                await api(
-                    '/api/admin/users' +
-                    (id ? '/' + id : ''),
-                    {
-                        method:
+                    fullName:
+                        $('userName')
+                            .value,
+
+                    email:
+                        $('userEmail')
+                            .value,
+
+                    role:
+                        $('userRole')
+                            .value,
+
+                    enabled:
+                        $('userEnabled')
+                            .checked,
+
+                    emailVerified:
+                        $('userVerified')
+                            .checked
+                };
+
+                if (id) {
+
+                    body.newPassword =
+                        $('userPassword')
+                            .value ||
+                        null;
+
+                } else {
+
+                    body.password =
+                        $('userPassword')
+                            .value;
+                }
+
+                try {
+
+                    await api(
+                        '/api/admin/users' +
+                        (
                             id
-                                ? 'PUT'
-                                : 'POST',
+                                ? '/' + id
+                                : ''
+                        ),
+                        {
+                            method:
+                                id
+                                    ? 'PUT'
+                                    : 'POST',
 
-                        body:
-                            JSON.stringify(body)
-                    }
-                );
+                            body:
+                                JSON.stringify(
+                                    body
+                                )
+                        }
+                    );
 
-                $('userDialog').close();
+                    $('userDialog')
+                        .close();
 
-                loadAdminUsers();
+                    loadAdminUsers();
 
-            } catch (x) {
+                } catch (x) {
 
-                $('userFormStatus')
-                    .textContent =
-                    x.message;
+                    $('userFormStatus')
+                        .textContent =
+                        x.message;
+                }
             }
-        }
-    );
+        );
 }

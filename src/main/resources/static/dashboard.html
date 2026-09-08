@@ -1,20 +1,31 @@
 <!doctype html>
+
 <html lang="en">
+
 <head>
+
     <meta charset="utf-8">
+
     <meta name="viewport" content="width=device-width,initial-scale=1">
+
     <meta name="robots" content="noindex,nofollow">
 
     <title>Participant Dashboard | MiTRAA</title>
 
     <link rel="stylesheet" href="/styles.css">
+
     <link rel="stylesheet" href="/enhancements.css">
+
     <link rel="stylesheet" href="/account.css">
 
     <script src="https://checkout.razorpay.com/v1/checkout.js" defer></script>
-	<link rel="icon" type="image/webp" href="/assets/favicon.webp">
+
+    <link rel="icon" type="image/webp" href="/assets/favicon.webp">
+
     <link rel="stylesheet" href="/responsive.css">
+
     <link rel="stylesheet" href="quality.css">
+
 </head>
 
 <body data-participant-dashboard="true">
@@ -22,6 +33,7 @@
 <div class="dashboard">
 
     <!-- ================= SIDEBAR ================= -->
+
     <aside class="sidebar">
 
         <a class="dashboard-brand"
@@ -36,6 +48,7 @@
             <span class="dashboard-portal-label">
                 Participant Portal
             </span>
+
         </a>
 
         <nav class="side-nav">
@@ -43,8 +56,10 @@
             <a href="/"
                class="side-home"
                aria-label="Open the MiTRAA home page without signing out">
+
                 <span aria-hidden="true">⌂</span>
                 Home
+
             </a>
 
             <a href="#overview" class="active">
@@ -90,16 +105,19 @@
             </form>
 
         </nav>
+
     </aside>
 
-
     <!-- ================= MAIN ================= -->
+
     <main class="dash-main" id="overview">
 
         <!-- TOP -->
+
         <div class="dash-top">
 
             <div>
+
                 <small class="eyebrow">
                     PARTICIPANT PORTAL
                 </small>
@@ -108,62 +126,76 @@
                     Welcome,
                     <span data-user-name>Innovator</span>
                 </h1>
+
             </div>
 
         </div>
 
-
         <!-- ================= QUEST STATUS ================= -->
-<div class="quest-status">
-    <span data-step="email">EMAIL ✓</span>
 
-    <span data-step="age">AGE</span>
+        <div class="quest-status">
 
-    <span data-step="guardian" hidden>GUARDIAN</span>
+            <span data-step="email">EMAIL ✓</span>
 
-    <span data-step="payment">PAYMENT</span>
+            <span data-step="age">AGE</span>
 
-    <span data-step="team">ENTRY</span>
+            <span data-step="guardian" hidden>GUARDIAN</span>
 
-    <span data-step="build">BUILD</span>
+            <span data-step="payment">PAYMENT</span>
 
-    <span data-step="active">ACTIVE</span>
-</div>
+            <span data-step="team">ENTRY</span>
 
+            <span data-step="build">BUILD</span>
+
+            <span data-step="active">ACTIVE</span>
+
+        </div>
 
         <!-- ================= KPI ================= -->
+
         <div class="kpi-grid">
 
             <div class="kpi">
+
                 <small>Player ID</small>
+
                 <strong data-registration-id>
                     Loading…
                 </strong>
+
             </div>
 
             <div class="kpi">
+
                 <small>Registration</small>
+
                 <strong data-registration-status>
                     Loading…
                 </strong>
+
             </div>
 
             <div class="kpi">
+
                 <small>Age assurance</small>
+
                 <strong data-verification-status>
                     Not started
                 </strong>
+
             </div>
 
             <div class="kpi">
+
                 <small>Entry</small>
+
                 <strong data-entry-type>
                     —
                 </strong>
+
             </div>
 
         </div>
-
 
         <!-- ================================================= -->
         <!-- STEP 1 : AGE ELIGIBILITY                         -->
@@ -201,13 +233,10 @@
             <p
                 id="verifyStatus"
                 class="form-status">
-
                 No separate age-assurance action is required.
-
             </p>
 
         </section>
-
 
         <!-- ================================================= -->
         <!-- STEP 2 : PAYMENT                                 -->
@@ -258,14 +287,11 @@
             <p
                 id="paymentStatus"
                 class="form-status">
-
                 Payment will be available after the required
                 registration steps are completed.
-
             </p>
 
         </section>
-
 
         <!-- ================================================= -->
         <!-- STEP 3 : GUARDIAN CONSENT                        -->
@@ -297,156 +323,138 @@
             </div>
 
             <p class="auth-note">
-
                 A six-digit consent code is emailed to the
                 registered guardian at
-
                 <span id="guardianMasked">
                     their protected address
                 </span>.
-
                 It expires in 10 minutes.
-
             </p>
-
 
             <button
                 id="requestGuardian"
                 class="btn btn-primary">
-
                 Email guardian consent code
-
             </button>
-
 
             <div class="consent-box">
 
                 <label>
+
                     <input
                         id="guardianAuthority"
                         type="checkbox">
 
                     I confirm I am the parent or legally authorized
                     guardian.
+
                 </label>
 
-
                 <label>
+
                     <input
                         id="guardianDetails"
                         type="checkbox">
 
                     I confirm the participant's name and date of
                     birth are correct.
+
                 </label>
 
-
                 <label>
+
                     <input
                         id="guardianParticipation"
                         type="checkbox">
 
                     I authorize the participant to join MiTRAA
                     Hackathons 2026.
+
                 </label>
 
-
                 <label>
+
                     <input
                         id="guardianTerms"
                         type="checkbox">
 
                     I accept the
-
                     <a
                         href="/terms"
                         target="_blank">
-
                         Terms of Participation
-
                     </a>.
+
                 </label>
 
-
                 <label>
+
                     <input
                         id="guardianPrivacy"
                         type="checkbox">
 
                     I accept the
-
                     <a
                         href="/privacy"
                         target="_blank">
-
                         Privacy Policy
-
                     </a>.
+
                 </label>
 
-
                 <label>
+
                     <input
                         id="guardianSafety"
                         type="checkbox">
 
                     I accept the
-
                     <a
                         href="/child-safety"
                         target="_blank">
-
                         Child Safety Policy
-
                     </a>.
+
                 </label>
 
-
                 <label>
+
                     <input
                         id="guardianRules"
                         type="checkbox">
 
                     I accept the
-
                     <a
                         href="/rules"
                         target="_blank">
-
                         Official Rules
-
                     </a>
-
                     and
-
                     <a
                         href="/code-of-conduct"
                         target="_blank">
-
                         Code of Conduct
-
                     </a>.
+
                 </label>
 
-
                 <label>
+
                     <input
                         id="guardianRefund"
                         type="checkbox">
 
                     I understand the
-
                     <a
                         href="/refund-policy"
                         target="_blank">
-
                         fees and refund policy
-
                     </a>.
+
                 </label>
 
-
                 <label>
+
                     <input
                         id="guardianData"
                         type="checkbox">
@@ -458,7 +466,6 @@
                 </label>
 
             </div>
-
 
             <div class="split">
 
@@ -477,17 +484,13 @@
 
                 </div>
 
-
                 <button
                     id="verifyGuardian"
                     class="btn btn-primary">
-
                     Verify consent
-
                 </button>
 
             </div>
-
 
             <p
                 id="guardianStatus"
@@ -495,7 +498,6 @@
             </p>
 
         </section>
-
 
         <!-- ================================================= -->
         <!-- STEP 3 : TEAM / ENTRY                            -->
@@ -526,14 +528,10 @@
 
             </div>
 
-
             <p class="auth-note">
-
                 Team entry requires 3–5 people in total,
                 including the leader.
-
             </p>
-
 
             <form
                 id="teamForm"
@@ -552,42 +550,30 @@
 
                 </div>
 
-
-                <div id="memberRows">
-                </div>
-
+                <div id="memberRows"></div>
 
                 <div class="team-member-controls">
 
                     <span
                         id="teamMemberCount"
                         aria-live="polite">
-
                         3 of 5 members
-
                     </span>
-
 
                     <button
                         id="addTeamMember"
                         class="btn btn-ghost"
                         type="button">
-
                         + Add member
-
                     </button>
 
                 </div>
 
-
                 <button
                     class="btn btn-primary"
                     type="submit">
-
                     Lock Squad
-
                 </button>
-
 
                 <p
                     id="teamStatus"
@@ -597,12 +583,9 @@
 
             </form>
 
-
-            <div id="teamResult">
-            </div>
+            <div id="teamResult"></div>
 
         </section>
-
 
         <!-- ================================================= -->
         <!-- STEP 4 : POC / BUILD                             -->
@@ -632,11 +615,9 @@
 
             </div>
 
-
             <form
                 id="pocForm"
                 class="auth-form">
-
 
                 <div class="split">
 
@@ -653,7 +634,6 @@
 
                     </div>
 
-
                     <div class="field">
 
                         <label>
@@ -669,42 +649,37 @@
 
                 </div>
 
-
                 <div class="field">
 
-                    <label>
+                    <label for="problemStatement">
                         Problem statement
                     </label>
 
                     <textarea
                         id="problemStatement"
                         required
-                        maxlength="2000">
-                    </textarea>
+                        maxlength="2000"></textarea>
 
                 </div>
 
-
                 <div class="field">
 
-                    <label>
+                    <label for="solutionSummary">
                         Solution summary
                     </label>
 
                     <textarea
                         id="solutionSummary"
                         required
-                        maxlength="4000">
-                    </textarea>
+                        maxlength="4000"></textarea>
 
                 </div>
-
 
                 <div class="split">
 
                     <div class="field">
 
-                        <label>
+                        <label for="repositoryUrl">
                             Repository URL
                         </label>
 
@@ -714,10 +689,9 @@
 
                     </div>
 
-
                     <div class="field">
 
-                        <label>
+                        <label for="demoUrl">
                             Demo URL
                         </label>
 
@@ -729,43 +703,35 @@
 
                 </div>
 
-
                 <div class="field">
 
-                    <label>
+                    <label for="responsibleAi">
                         Responsible AI, privacy and safety
                     </label>
 
                     <textarea
                         id="responsibleAi"
                         required
-                        maxlength="2000">
-                    </textarea>
+                        maxlength="2000"></textarea>
 
                 </div>
-
 
                 <div class="hero-actions">
 
                     <button
-                        class="btn btn-ghost">
-
+                        class="btn btn-ghost"
+                        type="submit">
                         Save Draft
-
                     </button>
-
 
                     <button
                         class="btn btn-primary"
                         id="submitPoc"
                         type="button">
-
                         Final Submit
-
                     </button>
 
                 </div>
-
 
                 <p
                     id="pocStatus"
@@ -776,17 +742,18 @@
 
         </section>
 
-
     </main>
 
 </div>
 
-
 <!-- ================= SCRIPTS ================= -->
 
 <script src="/portal.js"></script>
+
 <script src="/security-api.js"></script>
+
 <script src="quality.js" defer></script>
 
 </body>
+
 </html>
