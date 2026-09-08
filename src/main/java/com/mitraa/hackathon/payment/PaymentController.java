@@ -624,7 +624,7 @@ public class PaymentController {
                 "paymentId", razorpayPaymentId,
                 "invoiceNumber",
                 invoice.getInvoiceNumber(),
-                "redirectUrl", "/login.html"
+                "redirectUrl", "/login"
         ));
     }
 

@@ -31,7 +31,7 @@ public class AuthController {
    String normalized=email==null?"":email.trim().toLowerCase(Locale.ROOT);
    session.setAttribute("MITRAA_PENDING_PAYMENT_EMAIL",normalized);
    session.setAttribute("MITRAA_PENDING_PAYMENT_AT",Instant.now());
-   return Map.of("message","Email verified. Redirecting to secure payment.","paymentUrl","/payment.html");
+   return Map.of("message","Email verified. Redirecting to secure payment.","paymentUrl","/payment");
  }
  @PostMapping("/resend-otp") public Map<String,String> resend(@RequestBody Map<String,String> body){security.resendVerification(body.get("email"));return generic();}
  @PostMapping("/forgot-password") public Map<String,String> forgot(@RequestBody Map<String,String> body){security.requestPasswordReset(body.get("email"));return generic();}

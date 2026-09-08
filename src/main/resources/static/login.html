@@ -15,11 +15,11 @@
 
   <title>Secure Login | MiTRAA Hackathons 2026</title>
 
-  <link rel="stylesheet" href="styles.css">
-  <link rel="stylesheet" href="account.css">
-  <link rel="stylesheet" href="responsive.css">
-  <link rel="stylesheet" href="quality.css">
-  <link rel="icon" type="image/jpeg" href="/assets/favicon.jpeg">
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="/account.css">
+  <link rel="stylesheet" href="/responsive.css">
+  <link rel="stylesheet" href="/quality.css">
+  <link rel="icon" type="image/webp" href="/assets/favicon.webp">
 </head>
 
 <body class="auth-page">
@@ -30,7 +30,7 @@
     <aside class="auth-aside auth-brand-panel">
 
       <img
-        src="assets/mitraa-hackathons-logo.jpeg"
+        src="/assets/mitraa-hackathons-logo.webp"
         alt="MiTRAA Hackathons"
       >
 
@@ -59,7 +59,7 @@
     <!-- Login panel -->
     <main class="auth-main">
 
-      <a href="index.html" class="auth-note">
+      <a href="/" class="auth-note">
         ← Back to website
       </a>
 
@@ -196,7 +196,7 @@
 
         <a
           class="auth-action-card"
-          href="forgot-password.html"
+          href="/forgot-password"
         >
           <b>Forgot password?</b>
           <span>Receive a secure email reset code</span>
@@ -204,7 +204,7 @@
 
         <a
           class="auth-action-card"
-          href="register.html"
+          href="/register"
         >
           <b>Create new account</b>
           <span>Register as an individual or team</span>
@@ -212,7 +212,7 @@
 
         <a
           class="auth-action-card"
-          href="verify-email.html"
+          href="/verify-email"
         >
           <b>Verify email</b>
           <span>Enter your six-digit activation code</span>
@@ -224,10 +224,10 @@
 
   </div>
 
-  <script src="portal.js"></script>
-  <script src="sso-login.js"></script>
-  <script src="login-message.js"></script>
-  <script src="quality.js" defer></script>
+  <script src="/portal.js"></script>
+  <script src="/sso-login.js"></script>
+  <script src="/login-message.js"></script>
+  <script src="/quality.js" defer></script>
 
   <!-- Password-change redirect message -->
   <script>
@@ -254,7 +254,7 @@
         history.replaceState(
           {},
           document.title,
-          "/login.html"
+          "/login"
         );
       }
 
@@ -271,7 +271,7 @@
         history.replaceState(
           {},
           document.title,
-          "/login.html"
+          "/login"
         );
       }
     })();

@@ -1,6 +1,6 @@
 document.head.insertAdjacentHTML(
     'beforeend',
-    '<link rel="stylesheet" href="enhancements.css"><link rel="stylesheet" href="account.css"><link rel="stylesheet" href="team-builder.css">'
+    '<link rel="stylesheet" href="/enhancements.css"><link rel="stylesheet" href="/account.css"><link rel="stylesheet" href="/team-builder.css">'
 );
 
 const $ = id => document.getElementById(id);
@@ -501,7 +501,7 @@ if ($('registerForm')) {
                 setTimeout(
                     () => {
                         location.href =
-                            '/verify-email.html';
+                            '/verify-email';
                     },
                     900
                 );
@@ -1930,7 +1930,7 @@ if ($('verifyEmailForm')) {
                         () => {
                             location.href =
                                 d.paymentUrl ||
-                                '/payment.html';
+                                '/payment';
                         },
                         700
                     );
@@ -2111,7 +2111,7 @@ if ($('resetForm')) {
                 setTimeout(
                     () => {
                         location.href =
-                            '/login.html';
+                            '/login';
                     },
                     1000
                 );

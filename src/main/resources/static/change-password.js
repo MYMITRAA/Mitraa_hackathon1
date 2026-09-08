@@ -108,7 +108,7 @@
       status.classList.add("success");
 
       setTimeout(() => {
-        window.location.replace("/login.html?passwordChanged=true");
+        window.location.replace("/login?passwordChanged=true");
       }, 1500);
 
     } catch (error) {
@@ -126,12 +126,12 @@
         const backLink = byId("changePasswordBack");
 
         if (backLink) {
-          backLink.href = "/admin.html";
+          backLink.href = "/admin";
           backLink.textContent = "← Back to command center";
         }
       }
     })
     .catch(() => {
-      window.location.replace("/login.html");
+      window.location.replace("/login");
     });
 })();

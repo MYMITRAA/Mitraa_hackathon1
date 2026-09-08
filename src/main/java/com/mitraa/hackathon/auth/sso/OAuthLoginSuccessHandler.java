@@ -56,7 +56,7 @@ public class OAuthLoginSuccessHandler implements AuthenticationSuccessHandler {
         } catch (org.springframework.security.oauth2.core.OAuth2AuthenticationException exception) {
             SecurityContextHolder.clearContext();
             if (request.getSession(false) != null) request.getSession(false).invalidate();
-            response.sendRedirect("/login.html?ssoError=true");
+            response.sendRedirect("/login?ssoError=true");
             return;
         }
         Authentication local = org.springframework.security.authentication.UsernamePasswordAuthenticationToken
@@ -82,12 +82,12 @@ public class OAuthLoginSuccessHandler implements AuthenticationSuccessHandler {
                 var paymentSession = request.getSession(true);
                 paymentSession.setAttribute("MITRAA_PENDING_PAYMENT_EMAIL", user.getEmail());
                 paymentSession.setAttribute("MITRAA_PENDING_PAYMENT_AT", Instant.now());
-                response.sendRedirect("/login.html?paymentRequired=true");
+                response.sendRedirect("/login?paymentRequired=true");
                 return;
             }
         }
 
-        response.sendRedirect(administrator ? "/admin.html" : "/dashboard.html");
+        response.sendRedirect(administrator ? "/admin" : "/dashboard");
     }
 
     private String string(Object value) {

@@ -161,7 +161,7 @@
                 );
 
                 setTimeout(() => {
-                    window.location.href = "/login.html";
+                    window.location.href = "/login";
                 }, 500);
 
                 return;
@@ -273,7 +273,7 @@
                 );
 
                 window.location.href =
-                    "/login.html";
+                    "/login";
 
                 return;
             }
@@ -492,7 +492,7 @@
 
                     window.location.href =
                         data.redirectUrl ||
-                        "/login.html";
+                        "/login";
 
                 }, 1000);
 

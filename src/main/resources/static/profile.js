@@ -94,7 +94,7 @@
       render(await api("/api/profile"));
     } catch (error) {
       setStatus(profileStatus, error.message, true);
-      if (error.message.includes("session expired")) setTimeout(() => location.href = "/login.html", 800);
+      if (error.message.includes("session expired")) setTimeout(() => location.href = "/login", 800);
     }
   }
 
@@ -168,7 +168,7 @@
         otpInputs[0]?.focus();
       } else {
         setTimeout(() => {
-          window.location.replace("/dashboard.html");
+          window.location.replace("/dashboard");
         }, 1000);
       }
     } catch (error) {
@@ -191,7 +191,7 @@
       emailBadge.className = "verification-badge verified";
       verificationPanel.hidden = true;
       setStatus(profileStatus, result.message);
-      setTimeout(() => location.href = "/login.html?emailChanged=true", 1800);
+      setTimeout(() => location.href = "/login?emailChanged=true", 1800);
     } catch (error) {
       setStatus(otpStatus, error.message, true);
       verifyButton.disabled = false;

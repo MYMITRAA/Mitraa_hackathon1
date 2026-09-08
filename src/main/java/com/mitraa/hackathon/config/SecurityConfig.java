@@ -77,26 +77,35 @@ public class SecurityConfig {
 
                         .requestMatchers(
                                 "/",
-                                "/index.html",
-                                "/arenas.html",
-                                "/mission.html",
-                                "/quest.html",
-                                "/register.html",
-                                "/login.html",
-                                "/verify-email.html",
-                                "/forgot-password.html",
+                                "/404.html",
+                                "/404.css",
+                                "/",
+                                "/arenas",
+                                "/mission",
+                                "/quest",
+                                "/register",
+                                "/login",
+                                "/verify-email",
+                                "/forgot-password",
 
                                 // Payment activation page
-                                "/payment.html",
+                                "/payment",
                                 "/payment.js",
 
                                 "/profile.css",
-                                "/privacy.html",
-                                "/terms.html",
-                                "/rules.html",
-                                "/code-of-conduct.html",
-                                "/refund-policy.html",
-                                "/child-safety.html",
+                                "/privacy",
+                                "/terms",
+                                "/rules",
+                                "/code-of-conduct",
+                                "/refund-policy",
+                                "/child-safety",
+
+                                // Legacy .html URLs: allowed only so they can redirect to clean URLs.
+                                "/index.html", "/arenas.html", "/mission.html", "/quest.html",
+                                "/register.html", "/login.html", "/verify-email.html", "/forgot-password.html",
+                                "/dashboard.html", "/admin.html", "/payment.html", "/profile.html", "/change-password.html",
+                                "/privacy.html", "/terms.html", "/rules.html", "/code-of-conduct.html",
+                                "/refund-policy.html", "/child-safety.html",
 
                                 "/styles.css",
                                 "/enhancements.css",
@@ -194,7 +203,7 @@ public class SecurityConfig {
                         // -------------------------------------------------
 
                         .requestMatchers(
-                                "/admin.html",
+                                "/admin",
                                 "/admin.js",
                                 "/admin.css",
                                 "/api/admin/**"
@@ -210,8 +219,8 @@ public class SecurityConfig {
                         // -------------------------------------------------
 
                         .requestMatchers(
-                                "/dashboard.html",
-                                "/profile.html",
+                                "/dashboard",
+                                "/profile",
                                 "/profile.js",
                                 "/api/profile/**",
                                 "/api/payments/**",
@@ -279,7 +288,7 @@ public class SecurityConfig {
 
                 .formLogin(form -> form
 
-                        .loginPage("/login.html")
+                        .loginPage("/login")
 
                         .loginProcessingUrl("/api/auth/login")
 
@@ -316,7 +325,7 @@ public class SecurityConfig {
                                     if (administrator) {
 
                                         response.sendRedirect(
-                                                "/admin.html"
+                                                "/admin"
                                         );
 
                                         return;
@@ -336,7 +345,7 @@ public class SecurityConfig {
                                     if (user == null) {
 
                                         response.sendRedirect(
-                                                "/login.html?error=true"
+                                                "/login?error=true"
                                         );
 
                                         return;
@@ -398,7 +407,7 @@ public class SecurityConfig {
 
 
                                         response.sendRedirect(
-                                                "/login.html?paymentRequired=true"
+                                                "/login?paymentRequired=true"
                                         );
 
                                         return;
@@ -410,13 +419,13 @@ public class SecurityConfig {
                                     // ------------------------------------
 
                                     response.sendRedirect(
-                                            "/dashboard.html"
+                                            "/dashboard"
                                     );
                                 }
                         )
 
                         .failureUrl(
-                                "/login.html?error=true"
+                                "/login?error=true"
                         )
 
                         .permitAll()
@@ -431,7 +440,7 @@ public class SecurityConfig {
 
                         .logoutUrl("/api/auth/logout")
 
-                        .logoutSuccessUrl("/index.html")
+                        .logoutSuccessUrl("/")
 
                         .invalidateHttpSession(true)
 
@@ -500,7 +509,7 @@ public class SecurityConfig {
 
             http.oauth2Login(oauth -> oauth
 
-                    .loginPage("/login.html")
+                    .loginPage("/login")
 
                     .userInfoEndpoint(userInfo ->
                             userInfo.userService(oauth2UserService)
@@ -509,7 +518,7 @@ public class SecurityConfig {
                     .successHandler(oauthSuccessHandler)
 
                     .failureUrl(
-                            "/login.html?ssoError=true"
+                            "/login?ssoError=true"
                     )
             );
         }

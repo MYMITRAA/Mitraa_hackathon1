@@ -1,5 +1,5 @@
 User-agent: *
 Allow: /
-Disallow: /admin.html
-Disallow: /dashboard.html
+Disallow: /admin
+Disallow: /dashboard
 Sitemap: https://hackathons.mitratechgroup.com/sitemap.xml

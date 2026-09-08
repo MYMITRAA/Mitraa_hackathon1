@@ -18,7 +18,7 @@
     history.replaceState(
       {},
       document.title,
-      "/login.html"
+      "/login"
     );
 
     return;
@@ -32,7 +32,7 @@
     loginStatus.classList.add("error");
 
     const paymentLink = document.createElement("a");
-    paymentLink.href = "/payment.html";
+    paymentLink.href = "/payment";
     paymentLink.className = "btn btn-primary btn-lg";
     paymentLink.textContent = "Complete Payment";
     paymentLink.style.display = "inline-block";
@@ -40,7 +40,7 @@
 
     loginStatus.insertAdjacentElement("afterend", paymentLink);
 
-    history.replaceState({}, document.title, "/login.html");
+    history.replaceState({}, document.title, "/login");
     return;
   }
 
@@ -54,7 +54,7 @@
     history.replaceState(
       {},
       document.title,
-      "/login.html"
+      "/login"
     );
   }
 })();

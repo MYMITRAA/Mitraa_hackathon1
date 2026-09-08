@@ -159,7 +159,7 @@ public class NotificationService {
                 + notice(nextStep)
                 + actionButton(
                         "Open secure login",
-                        publicBaseUrl + "/login.html"
+                        publicBaseUrl + "/login"
                 )
                 + footerText(
                         "Your entry becomes active only after all "
@@ -398,7 +398,7 @@ public class NotificationService {
         String content =
                 greeting(user)
                 + notice("Your new email address has been verified and is now your MiTRAA login email.")
-                + actionButton("Sign in with new email", publicBaseUrl + "/login.html")
+                + actionButton("Sign in with new email", publicBaseUrl + "/login")
                 + footerText(
                         "If you did not make this change, contact info@mitratechgroup.com immediately."
                 );

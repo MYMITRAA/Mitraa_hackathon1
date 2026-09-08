@@ -18,10 +18,10 @@
     link.rel = [...rel].join(' ');
   });
 
-  const current = location.pathname.split('/').pop() || 'index.html';
+  const current = location.pathname.replace(/\/$/, '') || '/';
   document.querySelectorAll('nav a[href], .sidebar a[href]').forEach(link => {
     const target = link.getAttribute('href')?.split(/[?#]/)[0];
-    if (target === current || (current === 'index.html' && target === '/')) {
+    if (target === current) {
       link.setAttribute('aria-current', 'page');
     }
   });

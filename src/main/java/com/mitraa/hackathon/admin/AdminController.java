@@ -3,6 +3,7 @@ package com.mitraa.hackathon.admin;
 import com.mitraa.hackathon.common.InputNormalizer;
 import com.mitraa.hackathon.guardian.GuardianConsent;
 import com.mitraa.hackathon.guardian.GuardianConsentRepository;
+import com.mitraa.hackathon.invoice.InvoiceRepository;
 import com.mitraa.hackathon.notification.NotificationOutbox;
 import com.mitraa.hackathon.notification.NotificationOutboxRepository;
 import com.mitraa.hackathon.notification.NotificationStatus;
@@ -57,6 +58,7 @@ public class AdminController {
     private final UserRepository users;
     private final RegistrationRepository registrations;
     private final PaymentRepository payments;
+    private final InvoiceRepository invoices;
     private final NotificationOutboxRepository notifications;
     private final TeamRepository teams;
     private final SubmissionRepository submissions;
@@ -69,6 +71,7 @@ public class AdminController {
             UserRepository users,
             RegistrationRepository registrations,
             PaymentRepository payments,
+            InvoiceRepository invoices,
             NotificationOutboxRepository notifications,
             TeamRepository teams,
             SubmissionRepository submissions,
@@ -80,6 +83,7 @@ public class AdminController {
         this.users = users;
         this.registrations = registrations;
         this.payments = payments;
+        this.invoices = invoices;
         this.notifications = notifications;
         this.teams = teams;
         this.submissions = submissions;
@@ -706,9 +710,15 @@ public class AdminController {
 
     @GetMapping("/payments")
     @Transactional(readOnly = true)
-    public List<Map<String, Object>> paymentDetails() {
+    public List<Map<String, Object>> paymentDetails(
+            @RequestParam(required = false) String email
+    ) {
+        String emailQuery = email == null ? "" : email.trim().toLowerCase(Locale.ROOT);
+
         return payments.findAll()
                 .stream()
+                .filter(payment -> emailQuery.isBlank()
+                        || payment.getRegistration().getUser().getEmail().toLowerCase(Locale.ROOT).contains(emailQuery))
                 .sorted(
                         Comparator.comparing(Payment::getCreatedAt)
                                 .reversed()
@@ -769,6 +779,13 @@ public class AdminController {
                     item.put(
                             "paidAt",
                             payment.getPaidAt()
+                    );
+
+                    item.put(
+                            "invoiceNumber",
+                            invoices.findByPayment(payment)
+                                    .map(invoice -> invoice.getInvoiceNumber())
+                                    .orElse(null)
                     );
 
                     return item;
@@ -1059,7 +1076,7 @@ public class AdminController {
     @GetMapping(value = "/payments/export", produces = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
     @Transactional(readOnly = true)
     public ResponseEntity<byte[]> exportPayments() {
-        List<Map<String, Object>> data = paymentDetails();
+        List<Map<String, Object>> data = paymentDetails(null);
         List<List<Object>> rows = new java.util.ArrayList<>();
         for (int index = 0; index < data.size(); index++) {
             Map<String, Object> item = data.get(index);

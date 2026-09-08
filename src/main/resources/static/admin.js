@@ -522,10 +522,14 @@ async function loadTeams() {
     }
 }
 
-async function loadPayments() {
+async function loadPayments(email = "") {
     try {
+        const query = email.trim()
+            ? `?email=${encodeURIComponent(email.trim())}`
+            : "";
+
         const rows = await api(
-            "/api/admin/payments"
+            `/api/admin/payments${query}`
         );
 
         const tableBody = byId("paymentRows");
@@ -574,6 +578,12 @@ async function loadPayments() {
                             ${when(payment.paidAt)}
                         </small>
                     </td>
+
+                    <td>
+                        ${payment.invoiceNumber
+                            ? `<a class="btn btn-ghost btn-small" href="/api/invoices/${encodeURIComponent(payment.invoiceNumber)}/download">Invoice</a>`
+                            : "—"}
+                    </td>
                 </tr>
             `).join("")
             : empty(7);
@@ -581,7 +591,7 @@ async function loadPayments() {
     } catch (error) {
         showError(
             "paymentRows",
-            7,
+            8,
             error
         );
     }
@@ -905,6 +915,10 @@ async function loadAll() {
 document
     .querySelectorAll(".table-search")
     .forEach(input => {
+        if (input.hasAttribute("data-email-search")) {
+            return;
+        }
+
         input.addEventListener(
             "input",
             () => {
@@ -927,6 +941,17 @@ document
             }
         );
     });
+
+let paymentSearchTimer;
+const paymentEmailSearch = byId("paymentEmailSearch");
+if (paymentEmailSearch) {
+    paymentEmailSearch.addEventListener("input", () => {
+        clearTimeout(paymentSearchTimer);
+        paymentSearchTimer = setTimeout(() => {
+            loadPayments(paymentEmailSearch.value);
+        }, 250);
+    });
+}
 
 byId("refreshAll")?.addEventListener(
     "click",
@@ -1334,7 +1359,7 @@ byId("adminLogout")?.addEventListener(
             );
         } finally {
             window.location.href =
-                "/login.html";
+                "/login";
         }
     }
 );
