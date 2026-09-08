@@ -23,8 +23,3 @@ server:
         http-only: true
         same-site: lax
 
-app:
-  bootstrap-admin:
-    enabled: true
-    email: sk.litonn1@gmail.com
-    password: "MitraaAdmin@123"

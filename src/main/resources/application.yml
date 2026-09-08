@@ -110,8 +110,8 @@ app:
 
   payment:
     razorpay:
-      key-id: ${RAZORPAY_KEY_ID:}
-      key-secret: ${RAZORPAY_KEY_SECRET:}
+      key-id: rzp_test_TZ3Auv8MOVioNS
+      key-secret: Qzgh4YwNfrANovslPqV2grAx
       webhook-secret: ${RAZORPAY_WEBHOOK_SECRET:}
 
   notifications:

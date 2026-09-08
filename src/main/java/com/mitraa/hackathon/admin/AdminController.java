@@ -188,7 +188,11 @@ public class AdminController {
         boolean includeSuperAdmins = isSuperAdmin(authentication);
         return users.findAll()
                 .stream()
-                .filter(user -> includeSuperAdmins || user.getRole() != Role.SUPER_ADMIN)
+                .filter(user ->
+                        includeSuperAdmins
+                        || (user.getRole() != Role.SUPER_ADMIN
+                            && user.getRole() != Role.ADMIN)
+                )
                 .sorted(
                         Comparator.comparing(User::getCreatedAt).reversed()
                 )
@@ -1102,7 +1106,6 @@ public class AdminController {
     }
 
     @GetMapping(value = "/notifications/export", produces = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-    @Transactional(readOnly = true)
     public ResponseEntity<byte[]> exportNotifications(Authentication authentication) {
         List<List<Object>> rows = new java.util.ArrayList<>();
         boolean includeSuperAdmins = isSuperAdmin(authentication);

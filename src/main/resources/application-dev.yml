@@ -14,9 +14,3 @@ server:
     session:
       cookie:
         secure: false
-
-app:
-  bootstrap-admin:
-    enabled: true
-    email: sk.litonn1@gmail.com
-    password: "MitraaAdmin@123"
