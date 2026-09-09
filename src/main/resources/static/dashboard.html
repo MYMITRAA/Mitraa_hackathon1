@@ -26,6 +26,167 @@
 
     <link rel="stylesheet" href="quality.css">
 
+    <!-- =========================================================
+         GUARDIAN CONSENT CODE / VERIFY BUTTON
+         Only this section is newly added.
+         ========================================================= -->
+    <style>
+
+        .guardian-verify-row {
+            display: grid;
+            grid-template-columns: minmax(280px, 1fr) minmax(280px, 1.15fr);
+            gap: 22px;
+            align-items: end;
+            margin-top: 18px;
+        }
+
+        .guardian-code-field {
+            margin: 0;
+        }
+
+        .guardian-code-field label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 13px;
+            font-weight: 800;
+            color: #ffffff;
+        }
+
+        .guardian-code-input {
+            width: 100%;
+            height: 58px;
+
+            box-sizing: border-box;
+
+            padding: 0 20px;
+
+            border: 1px solid rgba(112, 87, 208, 0.55);
+            border-radius: 14px;
+
+            background:
+                linear-gradient(
+                    180deg,
+                    rgba(255, 255, 255, 0.07),
+                    rgba(255, 255, 255, 0.035)
+                );
+
+            color: #ffffff;
+
+            font-family: inherit;
+            font-size: 21px;
+            font-weight: 800;
+
+            letter-spacing: 0.30em;
+            text-align: center;
+
+            outline: none;
+
+            transition:
+                border-color 0.2s ease,
+                box-shadow 0.2s ease,
+                background 0.2s ease;
+        }
+
+        .guardian-code-input::placeholder {
+            color: rgba(255, 255, 255, 0.38);
+
+            font-size: 14px;
+            font-weight: 500;
+
+            letter-spacing: normal;
+        }
+
+        .guardian-code-input:hover {
+            border-color: rgba(70, 216, 232, 0.55);
+        }
+
+        .guardian-code-input:focus {
+            border-color: #28dce8;
+
+            background:
+                linear-gradient(
+                    180deg,
+                    rgba(255, 255, 255, 0.09),
+                    rgba(255, 255, 255, 0.045)
+                );
+
+            box-shadow:
+                0 0 0 3px rgba(40, 220, 232, 0.12),
+                0 10px 28px rgba(0, 0, 0, 0.20);
+        }
+
+        .guardian-verify-action {
+            display: flex;
+            align-items: flex-end;
+        }
+
+        .guardian-verify-btn {
+            width: 100%;
+            height: 58px;
+
+            border: 0;
+            border-radius: 14px;
+
+            font-family: inherit;
+            font-size: 16px;
+            font-weight: 800;
+
+            background:
+                linear-gradient(
+                    90deg,
+                    #7030e8 0%,
+                    #536cca 48%,
+                    #45a8bd 100%
+                );
+
+            color: #07101c;
+
+            cursor: pointer;
+
+            box-shadow:
+                0 10px 28px rgba(64, 93, 220, 0.20);
+
+            transition:
+                transform 0.18s ease,
+                box-shadow 0.18s ease,
+                filter 0.18s ease,
+                opacity 0.18s ease;
+        }
+
+        .guardian-verify-btn:hover:not(:disabled) {
+            transform: translateY(-1px);
+
+            filter: brightness(1.06);
+
+            box-shadow:
+                0 14px 34px rgba(64, 93, 220, 0.30);
+        }
+
+        .guardian-verify-btn:active:not(:disabled) {
+            transform: translateY(0);
+        }
+
+        .guardian-verify-btn:disabled {
+            opacity: 0.48;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        @media (max-width: 760px) {
+
+            .guardian-verify-row {
+                grid-template-columns: 1fr;
+                gap: 14px;
+            }
+
+            .guardian-code-input,
+            .guardian-verify-btn {
+                width: 100%;
+            }
+        }
+
+    </style>
+
 </head>
 
 <body data-participant-dashboard="true">
@@ -58,6 +219,7 @@
                aria-label="Open the MiTRAA home page without signing out">
 
                 <span aria-hidden="true">⌂</span>
+
                 Home
 
             </a>
@@ -73,13 +235,17 @@
             <a id="guardianNav"
                href="#guardian"
                hidden>
+
                 Guardian consent
+
             </a>
 
             <a id="teamNav"
                href="#team"
                hidden>
+
                 Team
+
             </a>
 
             <a href="#poc">
@@ -99,9 +265,11 @@
             </a>
 
             <form action="/api/auth/logout" method="post">
+
                 <button class="btn btn-ghost">
                     Logout
                 </button>
+
             </form>
 
         </nav>
@@ -226,14 +394,19 @@
             </div>
 
             <p class="auth-note">
+
                 Your date of birth was validated during registration.
+
                 Participants must be 10–35 years old.
+
             </p>
 
             <p
                 id="verifyStatus"
                 class="form-status">
+
                 No separate age-assurance action is required.
+
             </p>
 
         </section>
@@ -267,28 +440,38 @@
             </div>
 
             <p class="auth-note">
+
                 Complete your registration payment to activate your
+
                 MiTRAA Hackathons 2026 entry.
+
             </p>
 
             <p
                 class="auth-note"
                 id="dashboardPrice">
+
                 Loading price…
+
             </p>
 
             <button
                 id="payNow"
                 class="btn btn-primary"
                 disabled>
+
                 Pay and activate entry
+
             </button>
 
             <p
                 id="paymentStatus"
                 class="form-status">
+
                 Payment will be available after the required
+
                 registration steps are completed.
+
             </p>
 
         </section>
@@ -323,18 +506,25 @@
             </div>
 
             <p class="auth-note">
+
                 A six-digit consent code is emailed to the
+
                 registered guardian at
+
                 <span id="guardianMasked">
                     their protected address
                 </span>.
+
                 It expires in 10 minutes.
+
             </p>
 
             <button
                 id="requestGuardian"
                 class="btn btn-primary">
+
                 Email guardian consent code
+
             </button>
 
             <div class="consent-box">
@@ -379,10 +569,13 @@
                         type="checkbox">
 
                     I accept the
+
                     <a
                         href="/terms"
                         target="_blank">
+
                         Terms of Participation
+
                     </a>.
 
                 </label>
@@ -394,10 +587,13 @@
                         type="checkbox">
 
                     I accept the
+
                     <a
                         href="/privacy"
                         target="_blank">
+
                         Privacy Policy
+
                     </a>.
 
                 </label>
@@ -409,10 +605,13 @@
                         type="checkbox">
 
                     I accept the
+
                     <a
                         href="/child-safety"
                         target="_blank">
+
                         Child Safety Policy
+
                     </a>.
 
                 </label>
@@ -424,16 +623,23 @@
                         type="checkbox">
 
                     I accept the
+
                     <a
                         href="/rules"
                         target="_blank">
+
                         Official Rules
+
                     </a>
+
                     and
+
                     <a
                         href="/code-of-conduct"
                         target="_blank">
+
                         Code of Conduct
+
                     </a>.
 
                 </label>
@@ -445,10 +651,13 @@
                         type="checkbox">
 
                     I understand the
+
                     <a
                         href="/refund-policy"
                         target="_blank">
+
                         fees and refund policy
+
                     </a>.
 
                 </label>
@@ -467,11 +676,15 @@
 
             </div>
 
-            <div class="split">
+            <!-- =================================================
+                 UPDATED ONLY THIS GUARDIAN CODE SECTION
+                 ================================================= -->
 
-                <div class="field">
+            <div class="guardian-verify-row">
 
-                    <label>
+                <div class="field guardian-code-field">
+
+                    <label for="guardianOtp">
                         Guardian consent code
                     </label>
 
@@ -480,15 +693,24 @@
                         inputmode="numeric"
                         pattern="[0-9]{6}"
                         maxlength="6"
-                        class="otp-input">
+                        autocomplete="one-time-code"
+                        placeholder="Enter 6-digit code"
+                        class="otp-input guardian-code-input">
 
                 </div>
 
-                <button
-                    id="verifyGuardian"
-                    class="btn btn-primary">
-                    Verify consent
-                </button>
+                <div class="guardian-verify-action">
+
+                    <button
+                        id="verifyGuardian"
+                        class="btn btn-primary guardian-verify-btn"
+                        type="button">
+
+                        Verify consent
+
+                    </button>
+
+                </div>
 
             </div>
 
@@ -529,8 +751,11 @@
             </div>
 
             <p class="auth-note">
+
                 Team entry requires 3–5 people in total,
+
                 including the leader.
+
             </p>
 
             <form
@@ -557,14 +782,18 @@
                     <span
                         id="teamMemberCount"
                         aria-live="polite">
+
                         3 of 5 members
+
                     </span>
 
                     <button
                         id="addTeamMember"
                         class="btn btn-ghost"
                         type="button">
+
                         + Add member
+
                     </button>
 
                 </div>
@@ -572,7 +801,9 @@
                 <button
                     class="btn btn-primary"
                     type="submit">
+
                     Lock Squad
+
                 </button>
 
                 <p
@@ -721,14 +952,18 @@
                     <button
                         class="btn btn-ghost"
                         type="submit">
+
                         Save Draft
+
                     </button>
 
                     <button
                         class="btn btn-primary"
                         id="submitPoc"
                         type="button">
+
                         Final Submit
+
                     </button>
 
                 </div>
